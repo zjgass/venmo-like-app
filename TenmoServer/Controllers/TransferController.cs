@@ -24,7 +24,28 @@ namespace TenmoServer.Controllers
         [HttpGet]
         public ActionResult<List<Transfer>> GetAllCompletedTransfers()
         {
-            List<Transfer> transfer = dao.GetAllTransfers(User.Identity.UserId, true);
+            List<Transfer> transfers = dao.GetAllTransfers(User.Identity.Name, true);
+
+            return Ok(transfers);
+        }
+        [HttpGet("pending")]
+        public ActionResult<List<Transfer>> GetAllPendingTransfers()
+        {
+            List<Transfer> transfers = dao.GetAllTransfers(User.Identity.Name, false);
+
+            return Ok(transfers);
+        }
+        [HttpGet("{id}", Name = "GetTransfer")]
+        public ActionResult<Transfer> GetTransfer(int id)
+        {
+            Transfer transfer = dao.GetTransfer(User.Identity.Name, id);
+
+            return Ok(transfer);
+        }
+        [HttpPost]
+        public ActionResult<Transfer> SendTransfer(Transfer transfer)
+        {
+            //dao.SendTransfer();
 
             return Ok(transfer);
         }

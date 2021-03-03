@@ -21,7 +21,7 @@ namespace TenmoServer.DAO
             throw new NotImplementedException();
         }
 
-        public List<Transfer> GetAllTransfers(int userId, bool areComplete)
+        public List<Transfer> GetAllTransfers(string userName, bool areComplete)
         {
             List<Transfer> transfers = new List<Transfer>();
 
@@ -40,10 +40,10 @@ namespace TenmoServer.DAO
                         "join accounts as accto on transfers.account_to = accto.account_id " +
                         "join users as userfrom on accfrom.user_id = userfrom.user_id " +
                         "join users as userto on accto.user_id = userto.user_id " +
-                        "where userfrom.user_id = @userId ");
+                        "where userfrom.user_id = (select user_id from users where username = @userName) ");
                     sqlText += "and status.transfer_status_desc " + (areComplete ? "!= 'pending';" : "= 'pending';");
                     SqlCommand cmd = new SqlCommand(sqlText, conn);
-                    cmd.Parameters.AddWithValue("@userId", userId);
+                    cmd.Parameters.AddWithValue("@userName", userName);
                     SqlDataReader reader = cmd.ExecuteReader();
 
                     while (reader.Read())
@@ -61,7 +61,7 @@ namespace TenmoServer.DAO
             return transfers;
         }
 
-        public Transfer GetTransfer(int userId, int transferId)
+        public Transfer GetTransfer(string userName, int transferId)
         {
             Transfer transfer = new Transfer();
 
@@ -80,9 +80,9 @@ namespace TenmoServer.DAO
                         "join accounts as accto on transfers.account_to = accto.account_id " +
                         "join users as userfrom on accfrom.user_id = userfrom.user_id " +
                         "join users as userto on accto.user_id = userto.user_id " +
-                        "where userfrom.user_id = @userId and transfer_id = @transferId;");
+                        "where userfrom.user_id = (select user_id from users where username = @userName) and transfer_id = @transferId;");
                     SqlCommand cmd = new SqlCommand(sqlText, conn);
-                    cmd.Parameters.AddWithValue("@userId", userId);
+                    cmd.Parameters.AddWithValue("@userName", userName);
                     cmd.Parameters.AddWithValue("@transferId", transferId);
                     SqlDataReader reader = cmd.ExecuteReader();
 
@@ -106,13 +106,13 @@ namespace TenmoServer.DAO
             throw new NotImplementedException();
         }
 
-        public Transfer SendTransfer(int userFromId, int userToId, decimal amount)
+        public Transfer SendTransfer(string userFrom, int userToId, decimal amount)
         {
             Transfer transfer = new Transfer()
             {
                 TransferType = "Send",
                 TransferStatus = "Approved",
-                UserFromId = userFromId,
+                UserFrom = userFrom,
                 UserToId = userToId,
                 Amount = amount
             };
@@ -126,12 +126,12 @@ namespace TenmoServer.DAO
                     string sqlText = ("insert into transfers (transfer_type_id, transfer_status_id, account_from, account_to, amount) " +
                         "values ((select transfer_type_id from transfer_types where transfer_type_desc = @transferType), " +
                         "(select transfer_status_id from transfer_statuses where transfer_status_desc = @transferStatus), " +
-                        "(select account_id from accounts where user_id = @userFromId)," +
+                        "(select account_id from accounts where user_id = (select user_id from users where username = @userFrom))," +
                         "(select account_id from accounts where user_id = @userToId)); select scope_Identity();");
                     SqlCommand cmd = new SqlCommand(sqlText, conn);
                     cmd.Parameters.AddWithValue("@transferType", transfer.TransferType);
                     cmd.Parameters.AddWithValue("@transferStatus", transfer.TransferStatus);
-                    cmd.Parameters.AddWithValue("@userFromId", transfer.UserFromId);
+                    cmd.Parameters.AddWithValue("@userFrom", transfer.UserFrom);
                     cmd.Parameters.AddWithValue("@userToId", transfer.UserToId);
 
                     transfer.TransferId = Convert.ToInt32(cmd.ExecuteScalar());

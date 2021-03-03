@@ -8,10 +8,10 @@ namespace TenmoServer.DAO
 {
     public interface ITransferDAO
     {
-        Transfer SendTransfer(int userFromId, int userToId, decimal amount);
+        Transfer SendTransfer(string userfrom, int userToId, decimal amount);
         bool ExecuteTransfre();
         Transfer RequestTransfer();
-        List<Transfer> GetAllTransfers(int userId, bool areComplete);
-        Transfer GetTransfer(int userId, int transferId);
+        List<Transfer> GetAllTransfers(string userName, bool areComplete);
+        Transfer GetTransfer(string userName, int transferId);
     }
 }
