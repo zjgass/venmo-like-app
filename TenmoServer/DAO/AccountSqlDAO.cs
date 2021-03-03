@@ -17,7 +17,7 @@ namespace TenmoServer.DAO
         {
             connectionString = dbConnectionString;
         }
-        public Account GetAccount(string userId)
+        public Account GetAccount(int userId)
         {
 
 
@@ -57,6 +57,18 @@ namespace TenmoServer.DAO
             };
 
             return newAccount;
+        }
+
+        public Account Deposit(Account account, decimal amountToDeposit)
+        {
+            account.Balance += amountToDeposit;
+            return account;
+        }
+
+        public Account Withdraw(Account account, decimal amountToWidthdraw)
+        {
+            account.Balance -= amountToWidthdraw;
+            return account;
         }
     }
 }
