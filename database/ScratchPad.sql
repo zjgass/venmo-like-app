@@ -45,7 +45,7 @@ values
 	 where transfer_type_desc = 'request'),
 	(select transfer_status_id
 	 from transfer_statuses
-	 where transfer_status_desc = 'approved'),
+	 where transfer_status_desc = 'pending'),
 	(select account_id
 	 from accounts
 	 where user_id = (select user_id from users
@@ -66,7 +66,8 @@ join accounts as accfrom on transfers.account_from = accfrom.account_id
 join accounts as accto on transfers.account_to = accto.account_id
 join users as userfrom on accfrom.user_id = userfrom.user_id
 join users as userto on accto.user_id = userto.user_id
-where userfrom.user_id = (select user_id from users where username = 'test1');
+where userfrom.user_id = (select user_id from users where username = 'test1')
+and status.transfer_status_desc = 'pending';
 
 rollback transaction; 
 
@@ -111,3 +112,4 @@ from accounts
 where user_id = (select user_id from users where username = 'test1');
 
 rollback transaction;
+

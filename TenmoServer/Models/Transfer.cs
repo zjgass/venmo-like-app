@@ -7,11 +7,13 @@ namespace TenmoServer.Models
 {
     public class Transfer
     {
-        private int TransferId { get; }
-        private string TransferType { get; set; }
-        private string TransferStatus { get; set; }
-        private string UserFrom { get; set; }
-        private string UserTo { get; set; }
-        private decimal Amount { get; set; }
+        public int TransferId { get; set; }
+        public string TransferType { get; set; }
+        public string TransferStatus { get; set; }
+        public string UserFrom { get; set; }
+        public int UserFromId { get; set; }
+        public string UserTo { get; set; }
+        public int UserToId { get; set; }
+        public decimal Amount { get; set; }
     }
 }
