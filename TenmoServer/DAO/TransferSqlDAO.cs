@@ -50,7 +50,7 @@ namespace TenmoServer.DAO
 
         public List<Transfer> GetAllTransfers(string userName, bool areComplete)
         {
-            List<Transfer> transfers = new List<Transfer>();
+            List<Transfer> transfers = new List<Transfer>() { };
 
             try
             {
@@ -164,10 +164,10 @@ namespace TenmoServer.DAO
             Transfer transfer = new Transfer()
             {
                 TransferId = Convert.ToInt32(reader["transfer_id"]),
-                TransferType = Convert.ToString(reader["type.transfer_type_desc"]),
-                TransferStatus = Convert.ToString(reader["status.transfer_status_desc"]),
-                UserFrom = Convert.ToString(reader["userfrom.username"]),
-                UserTo = Convert.ToString(reader["userto.username"]),
+                TransferType = Convert.ToString(reader["transfer_type_desc"]),
+                TransferStatus = Convert.ToString(reader["transfer_status_desc"]),
+                UserFrom = Convert.ToString(reader["username"]),
+                UserTo = Convert.ToString(reader["username"]),
                 Amount = Convert.ToDecimal(reader["amount"])
             };
 

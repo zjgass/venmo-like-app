@@ -88,9 +88,13 @@ namespace TenmoServer.Controllers
         [HttpPut("{id}")]
         public ActionResult<Transfer> UpdateTransfer(Transfer transfer)
         {
-            
-            transfer = dao.UpdateTransfer(transfer);
-            return CreatedAtRoute("GetTransfer", new { id = transfer.TransferId }, transfer);
+            if (transfer.TransferStatus != "pending" && transfer.UserFrom == User.Identity.Name)
+            {
+                transfer = dao.UpdateTransfer(transfer);
+                return CreatedAtRoute("GetTransfer", new { id = transfer.TransferId }, transfer);
+            }
+
+            return BadRequest();
         }
     }
 }
