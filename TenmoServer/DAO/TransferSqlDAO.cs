@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Data.SqlClient;
 using System.Linq;
 using System.Threading.Tasks;
+using System.Transactions;
 using TenmoServer.Models;
 
 namespace TenmoServer.DAO
@@ -10,6 +11,7 @@ namespace TenmoServer.DAO
     public class TransferSqlDAO : ITransferDAO
     {
         private readonly string connectionString;
+        private TransactionScope transaction { get; set; }
 
         public TransferSqlDAO(string dbConnectionString)
         {
@@ -59,7 +61,7 @@ namespace TenmoServer.DAO
                 {
                     conn.Open();
 
-                    string sqlText = ("select transfer_id, type.transfer_type_desc, status.transfer_status_desc, " +
+                    string sqlText = "select transfer_id, type.transfer_type_desc, status.transfer_status_desc, " +
                         "userfrom.username, userto.username, amount " +
                         "from transfers " +
                         "join transfer_types as type on transfers.transfer_type_id = type.transfer_type_id " +
@@ -68,8 +70,9 @@ namespace TenmoServer.DAO
                         "join accounts as accto on transfers.account_to = accto.account_id " +
                         "join users as userfrom on accfrom.user_id = userfrom.user_id " +
                         "join users as userto on accto.user_id = userto.user_id " +
-                        "where userfrom.user_id = (select user_id from users where username = @userName) ");
-                    sqlText += "and status.transfer_status_desc " + (areComplete ? "!= 'pending';" : "= 'pending';");
+                        "where (userfrom.user_id = (select user_id from users where username = @userName) " +
+                        "or userto.user_id = (select user_id from users where username = @userName)) ";
+                    sqlText += "and status.transfer_status_desc " + (areComplete ? "= 'approved';" : "= 'pending';");
                     SqlCommand cmd = new SqlCommand(sqlText, conn);
                     cmd.Parameters.AddWithValue("@userName", userName);
                     SqlDataReader reader = cmd.ExecuteReader();
@@ -108,7 +111,9 @@ namespace TenmoServer.DAO
                         "join accounts as accto on transfers.account_to = accto.account_id " +
                         "join users as userfrom on accfrom.user_id = userfrom.user_id " +
                         "join users as userto on accto.user_id = userto.user_id " +
-                        "where userfrom.user_id = (select user_id from users where username = @userName) and transfer_id = @transferId;");
+                        "where (userfrom.user_id = (select user_id from users where username = @userName) " +
+                        "or userto.user_id = (select user_id from users where username = @userName)) " +
+                        "and transfer_id = @transferId;");
                     SqlCommand cmd = new SqlCommand(sqlText, conn);
                     cmd.Parameters.AddWithValue("@userName", userName);
                     cmd.Parameters.AddWithValue("@transferId", transferId);
@@ -173,6 +178,60 @@ namespace TenmoServer.DAO
             };
 
             return transfer;
+        }
+
+        private bool ExecuteTransfer(Transfer transfer)
+        {
+            bool txComplete = false;
+
+            if (transfer.TransferStatus.ToLower().Equals("approved"))
+            {
+                transaction = new TransactionScope();
+
+                decimal initSum = 0;
+
+                try
+                {
+                    using (SqlConnection conn = new SqlConnection(connectionString))
+                    {
+                        conn.Open();
+
+                        string sqlText = "select sum(balance) " +
+                            "from accounts " +
+                            "where user_id = ";
+                        sqlText += (transfer.UserFromId > 0) ? "@userFromId " : "(select user_id from users where username = @userFrom) ";
+                        sqlText += "or user_id = ";
+                        sqlText += (transfer.UserToId > 0) ? "@userToId " : "(select user_id from users where username = @userTo); ";
+                        sqlText+= "select scope_Identitiy;";
+                        SqlCommand cmd = new SqlCommand(sqlText, conn);
+                        if (transfer.UserFromId > 0)
+                        {
+                            cmd.Parameters.AddWithValue("@userFromId", transfer.UserFromId);
+                        } else
+                        {
+                            cmd.Parameters.AddWithValue("@userFrom", transfer.UserFrom);
+                        }
+                        if (transfer.UserToId > 0)
+                        {
+                            cmd.Parameters.AddWithValue("@userToId", transfer.UserToId);
+                        }
+                        else
+                        {
+                            cmd.Parameters.AddWithValue("@userTo", transfer.UserTo);
+                        }
+
+                        initSum = Convert.ToDecimal(cmd.ExecuteScalar());
+
+
+                    }
+                }
+                catch (Exception e)
+                {
+                    throw e;
+                }
+            }
+
+            return txComplete;
         }
     }
 }

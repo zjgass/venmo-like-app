@@ -62,6 +62,24 @@ namespace TenmoServer.DAO
         public Account Deposit(Account account, decimal amountToDeposit)
         {
             account.Balance += amountToDeposit;
+
+            try
+            {
+                using (SqlConnection conn = new SqlConnection(connectionString))
+                {
+                    conn.Open();
+
+                    string sqlText = "Update accounts set balance = @newBalance " +
+                        "where account_id = @accountId;";
+                    SqlCommand cmd = new SqlCommand(sqlText, conn);
+                    cmd.Parameters.AddWithValue("@newBalance", account.Balance);
+                    cmd.Parameters.AddWithValue("@accountId", account.Account_Id);
+                }
+            }
+            catch (Exception e)
+            {
+                throw e;
+            }
             return account;
         }
 
