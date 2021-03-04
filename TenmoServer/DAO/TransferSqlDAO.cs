@@ -16,8 +16,9 @@ namespace TenmoServer.DAO
             connectionString = dbConnectionString;
         }
 
-        public Transfer UpdateTransfer(Transfer transfer)
+        public bool UpdateTransfer(Transfer transfer)
         {
+            bool updateComplete = false;
             try
             {
                 using (SqlConnection conn = new SqlConnection(connectionString))
@@ -31,11 +32,11 @@ namespace TenmoServer.DAO
                     SqlCommand cmd = new SqlCommand(sqlText, conn);
                     cmd.Parameters.AddWithValue("@status", transfer.TransferStatus);
                     cmd.Parameters.AddWithValue("@transferId", transfer.TransferId);
-                    SqlDataReader reader = cmd.ExecuteReader();
+                    int rowsAffected = Convert.ToInt32(cmd.ExecuteNonQuery());
 
-                    if (reader.HasRows && reader.Read())
+                    if (rowsAffected > 0)
                     {
-                        transfer = ConvertReaderToTransfer(reader);
+                        updateComplete = true;
                     }
                 }
             }
@@ -45,7 +46,7 @@ namespace TenmoServer.DAO
                 throw e;
             }
 
-            return transfer;
+            return updateComplete;
         }
 
         public List<Transfer> GetAllTransfers(string userName, bool areComplete)

@@ -90,7 +90,7 @@ namespace TenmoServer.Controllers
         {
             if (transfer.TransferStatus != "pending" && transfer.UserFrom == User.Identity.Name)
             {
-                transfer = dao.UpdateTransfer(transfer);
+                bool updateComplete = dao.UpdateTransfer(transfer);
                 return CreatedAtRoute("GetTransfer", new { id = transfer.TransferId }, transfer);
             }
 

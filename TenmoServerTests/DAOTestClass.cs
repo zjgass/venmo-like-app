@@ -28,6 +28,7 @@ namespace TenmoServerTests.TransferSqlDAOTests
         protected User TestUser2 { get; set; } = new User();
         protected Account TestAccount1 { get; set; } = new Account();
         protected Account TestAccount2 { get; set; } = new Account();
+        protected Transfer TestTransfer { get; set; } = new Transfer();
 
         [TestInitialize]
         public void SetUp()
@@ -46,6 +47,11 @@ namespace TenmoServerTests.TransferSqlDAOTests
             TestUser2.Username = "TestUser2";
             TestUser2.PasswordHash = hash.Password;
             TestUser2.Salt = hash.Salt;
+
+            // Define TestTrnsfer
+            TestTransfer.TransferType = "send";
+            TestTransfer.TransferStatus = "pending";
+            TestTransfer.Amount = 50.00M;
 
             try
             {
@@ -87,14 +93,14 @@ namespace TenmoServerTests.TransferSqlDAOTests
                         "(select transfer_status_id from transfer_statuses where transfer_status_desc = @status), " +
                         "(select account_id from accounts where user_id = @userFromId), " +
                         "(select account_id from accounts where user_id = @userToId), " +
-                        "@amount );";
+                        "@amount ); select scope_Identity();";
                     cmd = new SqlCommand(sqlText, conn);
-                    cmd.Parameters.AddWithValue("@type", "send");
-                    cmd.Parameters.AddWithValue("@status", "approved");
+                    cmd.Parameters.AddWithValue("@type", TestTransfer.TransferType);
+                    cmd.Parameters.AddWithValue("@status", TestTransfer.TransferStatus);
                     cmd.Parameters.AddWithValue("@userFromId", TestUser1.UserId);
                     cmd.Parameters.AddWithValue("@userToId", TestUser2.UserId);
-                    cmd.Parameters.AddWithValue("@amount", 50);
-                    cmd.ExecuteNonQuery();
+                    cmd.Parameters.AddWithValue("@amount", TestTransfer.Amount);
+                    TestTransfer.TransferId = Convert.ToInt32(cmd.ExecuteScalar());
 
                     cmd = new SqlCommand(sqlText, conn);
                     cmd.Parameters.AddWithValue("@type", "send");

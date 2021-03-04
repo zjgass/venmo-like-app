@@ -66,8 +66,10 @@ join accounts as accfrom on transfers.account_from = accfrom.account_id
 join accounts as accto on transfers.account_to = accto.account_id
 join users as userfrom on accfrom.user_id = userfrom.user_id
 join users as userto on accto.user_id = userto.user_id
-where userfrom.user_id = (select user_id from users where username = 'none')
-and status.transfer_status_desc = 'pending';
+where userfrom.user_id = (select user_id from users where username = 'test1')
+and transfer_id = (select top 1 transfer_id from transfers where account_from = 
+(select account_id from accounts where user_id = 
+(select user_id from users where username = 'test1')));
 
 rollback transaction; 
 
