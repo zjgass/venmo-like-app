@@ -142,15 +142,19 @@ namespace TenmoServer.DAO
                 {
                     conn.Open();
 
-                    string sqlText = ("insert into transfers (transfer_type_id, transfer_status_id, account_from, account_to, amount) " +
+                    string sqlText = "select user_id from users where user_id = @userFromId or user_id = @userToId;";
+                    SqlCommand cmd = new SqlCommand(sqlText, conn);
+                    cmd.Parameters.AddWithValue("@userId", transfer.UserTo);
+
+                    sqlText = "insert into transfers (transfer_type_id, transfer_status_id, account_from, account_to, amount) " +
                         "values ((select transfer_type_id from transfer_types where transfer_type_desc = @transferType), " +
                         "(select transfer_status_id from transfer_statuses where transfer_status_desc = @transferStatus), " +
                         "(select account_id from accounts where user_id = (select user_id from users where username = @userFrom))," +
-                        "(select account_id from accounts where user_id = @userToId)); select scope_Identity();");
-                    SqlCommand cmd = new SqlCommand(sqlText, conn);
+                        "(select account_id from accounts where user_id = @userToId)); select scope_Identity();";
+                    cmd = new SqlCommand(sqlText, conn);
                     cmd.Parameters.AddWithValue("@transferType", transfer.TransferType);
                     cmd.Parameters.AddWithValue("@transferStatus", transfer.TransferStatus);
-                    cmd.Parameters.AddWithValue("@userFrom", transfer.UserFrom);
+                    cmd.Parameters.AddWithValue("@userFrom", transfer.Author);
                     cmd.Parameters.AddWithValue("@userToId", transfer.UserToId);
 
                     transfer.TransferId = Convert.ToInt32(cmd.ExecuteScalar());
@@ -172,7 +176,7 @@ namespace TenmoServer.DAO
                 TransferId = Convert.ToInt32(reader["transfer_id"]),
                 TransferType = Convert.ToString(reader["transfer_type_desc"]),
                 TransferStatus = Convert.ToString(reader["transfer_status_desc"]),
-                UserFrom = Convert.ToString(reader["username"]),
+                Author = Convert.ToString(reader["username"]),
                 UserTo = Convert.ToString(reader["username"]),
                 Amount = Convert.ToDecimal(reader["amount"])
             };
@@ -209,7 +213,7 @@ namespace TenmoServer.DAO
                             cmd.Parameters.AddWithValue("@userFromId", transfer.UserFromId);
                         } else
                         {
-                            cmd.Parameters.AddWithValue("@userFrom", transfer.UserFrom);
+                            cmd.Parameters.AddWithValue("@userFrom", transfer.Author);
                         }
                         if (transfer.UserToId > 0)
                         {

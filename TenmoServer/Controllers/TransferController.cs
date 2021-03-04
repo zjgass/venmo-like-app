@@ -60,7 +60,7 @@ namespace TenmoServer.Controllers
         [HttpPost]
         public ActionResult<Transfer> SendTransfer(Transfer transfer)
         {
-            if (User.Identity.Name == transfer.UserFrom)
+            if (User.Identity.Name == transfer.Author)
             {
                 transfer.TransferType = "Send";
                 transfer.TransferStatus = "Approved";
@@ -88,7 +88,7 @@ namespace TenmoServer.Controllers
         [HttpPut("{id}")]
         public ActionResult<Transfer> UpdateTransfer(Transfer transfer)
         {
-            if (transfer.TransferStatus != "pending" && transfer.UserFrom == User.Identity.Name)
+            if (transfer.TransferStatus != "pending" && transfer.Author == User.Identity.Name)
             {
                 bool updateComplete = dao.UpdateTransfer(transfer);
                 return CreatedAtRoute("GetTransfer", new { id = transfer.TransferId }, transfer);

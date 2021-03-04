@@ -10,7 +10,7 @@ namespace TenmoServer.Models
         public int TransferId { get; set; }
         public string TransferType { get; set; }
         public string TransferStatus { get; set; }
-        public string UserFrom { get; set; }
+        public string Author { get; set; }
         public int UserFromId { get; set; }
         public string UserTo { get; set; }
         public int UserToId { get; set; }
