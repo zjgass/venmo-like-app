@@ -28,7 +28,7 @@ namespace TenmoServerTests.TransferSqlDAOTests
         protected User TestUser2 { get; set; } = new User();
         protected Account TestAccount1 { get; set; } = new Account();
         protected Account TestAccount2 { get; set; } = new Account();
-        protected Transfer TestTransfer { get; set; } = new Transfer();
+        protected ToClientTransfer TestTransfer { get; set; } = new ToClientTransfer();
 
         [TestInitialize]
         public void SetUp()

@@ -18,7 +18,7 @@ namespace TenmoServerTests.TransferSqlDAOTests
             TransferSqlDAO dao = new TransferSqlDAO(connectionString);
 
             // Act
-            Transfer transfer = dao.GetTransfer(TestUser1.Username, TestTransfer.TransferId);
+            ToClientTransfer transfer = dao.GetTransfer(TestUser1.Username, TestTransfer.TransferId);
 
             // Assert
             Assert.IsTrue(transfer.TransferStatus.ToLower().Equals(TestTransfer.TransferStatus.ToLower()));
@@ -32,7 +32,7 @@ namespace TenmoServerTests.TransferSqlDAOTests
             TransferSqlDAO dao = new TransferSqlDAO(connectionString);
 
             // Act
-            Transfer transfer = dao.GetTransfer(null, TestTransfer.TransferId);
+            ToClientTransfer transfer = dao.GetTransfer(null, TestTransfer.TransferId);
 
             // Assert
             Assert.IsTrue(transfer.TransferStatus.ToLower().Equals(TestTransfer.TransferStatus.ToLower()));
@@ -45,7 +45,7 @@ namespace TenmoServerTests.TransferSqlDAOTests
             TransferSqlDAO dao = new TransferSqlDAO(connectionString);
 
             // Act
-            Transfer transfer = dao.GetTransfer(TestUser1.Username, Int32.MaxValue);
+            ToClientTransfer transfer = dao.GetTransfer(TestUser1.Username, Int32.MaxValue);
 
             // Assert
             Assert.IsNull(transfer.TransferStatus);
@@ -58,7 +58,7 @@ namespace TenmoServerTests.TransferSqlDAOTests
             TransferSqlDAO dao = new TransferSqlDAO(connectionString);
 
             // Act
-            Transfer transfer = dao.GetTransfer(TestUser1.Username, -1);
+            ToClientTransfer transfer = dao.GetTransfer(TestUser1.Username, -1);
 
             // Assert
             Assert.IsNull(transfer.TransferStatus);

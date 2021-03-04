@@ -18,7 +18,7 @@ namespace TenmoServerTests.TransferSqlDAOTests
             TransferSqlDAO dao = new TransferSqlDAO(connectionString);
 
             // Act
-            IList<Transfer> transferList = dao.GetAllTransfers(TestUser1.Username, true);
+            IList<ToClientTransfer> transferList = dao.GetAllTransfers(TestUser1.Username, true);
 
             // Assert
             Assert.IsTrue(transferList.Count > 0);
@@ -31,7 +31,7 @@ namespace TenmoServerTests.TransferSqlDAOTests
             TransferSqlDAO dao = new TransferSqlDAO(connectionString);
 
             // Act
-            IList<Transfer> transferList = dao.GetAllTransfers(TestUser1.Username, false);
+            IList<ToClientTransfer> transferList = dao.GetAllTransfers(TestUser1.Username, false);
 
             // Assert
             Assert.IsTrue(transferList.Count > 0);
@@ -44,7 +44,7 @@ namespace TenmoServerTests.TransferSqlDAOTests
             TransferSqlDAO dao = new TransferSqlDAO(connectionString);
 
             // Act
-            IList<Transfer> transferList = dao.GetAllTransfers("bobIsAUserNameThatDoesNotExist", true);
+            IList<ToClientTransfer> transferList = dao.GetAllTransfers("bobIsAUserNameThatDoesNotExist", true);
 
             // Assert
             Assert.IsTrue(transferList.Count == 0);
@@ -58,7 +58,7 @@ namespace TenmoServerTests.TransferSqlDAOTests
             TransferSqlDAO dao = new TransferSqlDAO(connectionString);
 
             // Act
-            IList<Transfer> transferList = dao.GetAllTransfers(null, true);
+            IList<ToClientTransfer> transferList = dao.GetAllTransfers(null, true);
 
             // Assert
             Assert.IsTrue(transferList.Count == 0);

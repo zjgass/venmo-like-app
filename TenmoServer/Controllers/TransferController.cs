@@ -22,9 +22,9 @@ namespace TenmoServer.Controllers
         }
 
         [HttpGet]
-        public ActionResult<List<Transfer>> GetAllCompletedTransfers()
+        public ActionResult<List<ToClientTransfer>> GetAllCompletedTransfers()
         {
-            List<Transfer> transfers = dao.GetAllTransfers(User.Identity.Name, true);
+            List<ToClientTransfer> transfers = dao.GetAllTransfers(User.Identity.Name, true);
 
             if (transfers != null)
             {
@@ -34,9 +34,9 @@ namespace TenmoServer.Controllers
             return BadRequest();
         }
         [HttpGet("pending")]
-        public ActionResult<List<Transfer>> GetAllPendingTransfers()
+        public ActionResult<List<ToClientTransfer>> GetAllPendingTransfers()
         {
-            List<Transfer> transfers = dao.GetAllTransfers(User.Identity.Name, false);
+            List<ToClientTransfer> transfers = dao.GetAllTransfers(User.Identity.Name, false);
 
             if (transfers != null)
             {
@@ -46,9 +46,9 @@ namespace TenmoServer.Controllers
             return BadRequest();
         }
         [HttpGet("{id}", Name = "GetTransfer")]
-        public ActionResult<Transfer> GetTransfer(int id)
+        public ActionResult<ToClientTransfer> GetTransfer(int id)
         {
-            Transfer transfer = dao.GetTransfer(User.Identity.Name, id);
+            ToClientTransfer transfer = dao.GetTransfer(User.Identity.Name, id);
 
             if (transfer != null)
             {
@@ -58,35 +58,35 @@ namespace TenmoServer.Controllers
             return NotFound();
         }
         [HttpPost]
-        public ActionResult<Transfer> SendTransfer(Transfer transfer)
+        public ActionResult<ToClientTransfer> SendTransfer(FromClientTransfer transferIn)
         {
-            if (User.Identity.Name == transfer.Author)
+            if (User.Identity.Name == transferIn.Author)
             {
-                transfer.TransferType = "Send";
-                transfer.TransferStatus = "Approved";
-                transfer = dao.NewTransfer(transfer);
+                transferIn.TransferType = "Send";
+                transferIn.TransferStatus = "Approved";
+                ToClientTransfer transferOut = dao.NewTransfer(transferIn);
 
-                return CreatedAtRoute("GetTransfer", new { id = transfer.TransferId }, transfer);
+                return CreatedAtRoute("GetTransfer", new { id = transferOut.TransferId }, transferOut);
             }
 
             return BadRequest();
         }
         [HttpPost("request")]
-        public ActionResult<Transfer> RequestTransfer(Transfer transfer)
+        public ActionResult<ToClientTransfer> RequestTransfer(FromClientTransfer transferIn)
         {
-            if (User.Identity.Name == transfer.UserTo)
+            if (User.Identity.Name == transferIn.Author)
             {
-                transfer.TransferType = "Request";
-                transfer.TransferStatus = "Pending";
-                transfer = dao.NewTransfer(transfer);
+                transferIn.TransferType = "Request";
+                transferIn.TransferStatus = "Pending";
+                ToClientTransfer transferOut = dao.NewTransfer(transferIn);
 
-                return CreatedAtRoute("GetTransfer", new { id = transfer.TransferId }, transfer);
+                return CreatedAtRoute("GetTransfer", new { id = transferOut.TransferId }, transferOut);
             }
 
             return BadRequest();
         }
         [HttpPut("{id}")]
-        public ActionResult<Transfer> UpdateTransfer(Transfer transfer)
+        public ActionResult<ToClientTransfer> UpdateTransfer(FromClientTransfer transfer)
         {
             if (transfer.TransferStatus != "pending" && transfer.Author == User.Identity.Name)
             {

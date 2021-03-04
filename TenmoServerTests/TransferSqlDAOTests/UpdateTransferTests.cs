@@ -16,7 +16,7 @@ namespace TenmoServerTests.TransferSqlDAOTests
         {
             // Arrange
             TransferSqlDAO dao = new TransferSqlDAO(connectionString);
-            Transfer updatedTransfer = new Transfer()
+            FromClientTransfer updatedTransfer = new FromClientTransfer()
             {
                 TransferId = TestTransfer.TransferId,
                 TransferType = "send",
@@ -35,7 +35,7 @@ namespace TenmoServerTests.TransferSqlDAOTests
         {
             // Arrange
             TransferSqlDAO dao = new TransferSqlDAO(connectionString);
-            Transfer updatedTransfer = new Transfer()
+            FromClientTransfer updatedTransfer = new FromClientTransfer()
             {
                 TransferId = TestTransfer.TransferId,
                 TransferType = "request",
