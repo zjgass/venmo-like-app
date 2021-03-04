@@ -113,3 +113,14 @@ where user_id = (select user_id from users where username = 'test1');
 
 rollback transaction;
 
+select * from transfer_statuses;
+select * from transfer_types;
+
+-- Try to update status for transfers
+update transfers
+set transfer_status_id = (
+	select transfer_status_id
+	from transfer_statuses
+	where transfer_status_desc = 'pending'
+	)
+where transfer_id = 1

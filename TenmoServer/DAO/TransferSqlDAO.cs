@@ -16,9 +16,36 @@ namespace TenmoServer.DAO
             connectionString = dbConnectionString;
         }
 
-        public bool ExecuteTransfre()
+        public Transfer UpdateTransfer(Transfer transfer)
         {
-            throw new NotImplementedException();
+            try
+            {
+                using (SqlConnection conn = new SqlConnection(connectionString))
+                {
+                    conn.Open();
+
+                    string sqlText = "Update transfers set transfer_status_id = " +
+                        "(select transfer_status_id from transfer_statuses where transfer_status_desc = @status) " +
+                        "where transfer_id = @transferId and transfer_status_id = " +
+                        "(select transfer_status_id from transfer_statuses where transfer_status_desc = 'pending');";
+                    SqlCommand cmd = new SqlCommand(sqlText, conn);
+                    cmd.Parameters.AddWithValue("@status", transfer.TransferStatus);
+                    cmd.Parameters.AddWithValue("@transferId", transfer.TransferId);
+                    SqlDataReader reader = cmd.ExecuteReader();
+
+                    if (reader.HasRows && reader.Read())
+                    {
+                        transfer = ConvertReaderToTransfer(reader);
+                    }
+                }
+            }
+            catch (Exception e)
+            {
+
+                throw e;
+            }
+
+            return transfer;
         }
 
         public List<Transfer> GetAllTransfers(string userName, bool areComplete)
@@ -101,22 +128,8 @@ namespace TenmoServer.DAO
             return transfer;
         }
 
-        public Transfer RequestTransfer()
+        public Transfer NewTransfer(Transfer transfer)
         {
-            throw new NotImplementedException();
-        }
-
-        public Transfer SendTransfer(string userFrom, int userToId, decimal amount)
-        {
-            Transfer transfer = new Transfer()
-            {
-                TransferType = "Send",
-                TransferStatus = "Approved",
-                UserFrom = userFrom,
-                UserToId = userToId,
-                Amount = amount
-            };
-
             try
             {
                 using (SqlConnection conn = new SqlConnection(connectionString))
