@@ -37,14 +37,50 @@ namespace TenmoServerTests.TransferSqlDAOTests
             Assert.IsNull(transfer.TransferStatus);
         }
 
-        [TestMethod]
-        public void NegativeTransferNumber()
+        [DataTestMethod]
+        [DataRow(-1)]
+        [DataRow(-5)]
+        [DataRow(-10)]
+        [DataRow(-100)]
+        [DataRow(Int32.MinValue)]
+        public void NegativeTransferNumber(int id)
         {
             // Arrange
             TransferSqlDAO dao = new TransferSqlDAO(connectionString);
 
             // Act
-            Transfer transfer = dao.GetTransfer(TestUser1.UserId, -1);
+            Transfer transfer = dao.GetTransfer(TestUser1.UserId, id);
+
+            // Assert
+            Assert.IsNull(transfer.TransferStatus);
+        }
+
+        [DataTestMethod]
+        [DataRow(-1)]
+        [DataRow(-5)]
+        [DataRow(-10)]
+        [DataRow(-100)]
+        [DataRow(Int32.MinValue)]
+        public void NegativeUserId(int id)
+        {
+            // Arrange
+            TransferSqlDAO dao = new TransferSqlDAO(connectionString);
+
+            // Act
+            Transfer transfer = dao.GetTransfer(id, TestTransfer.TransferId);
+
+            // Assert
+            Assert.IsNull(transfer.TransferStatus);
+        }
+
+        [TestMethod]
+        public void BigBadUserNumber()
+        {
+            // Arrange
+            TransferSqlDAO dao = new TransferSqlDAO(connectionString);
+
+            // Act
+            Transfer transfer = dao.GetTransfer(Int32.MaxValue, TestTransfer.TransferId);
 
             // Assert
             Assert.IsNull(transfer.TransferStatus);

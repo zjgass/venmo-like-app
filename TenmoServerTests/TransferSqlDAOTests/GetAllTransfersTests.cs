@@ -38,13 +38,31 @@ namespace TenmoServerTests.TransferSqlDAOTests
         }
 
         [TestMethod]
-        public void BadUserId()
+        public void BigUserId()
         {
             // Arrange
             TransferSqlDAO dao = new TransferSqlDAO(connectionString);
 
             // Act
             IList<Transfer> transferList = dao.GetAllTransfers(Int32.MaxValue, true);
+
+            // Assert
+            Assert.IsTrue(transferList.Count == 0);
+        }
+
+        [DataTestMethod]
+        [DataRow(-1)]
+        [DataRow(-5)]
+        [DataRow(-10)]
+        [DataRow(-100)]
+        [DataRow(Int32.MinValue)]
+        public void NegativeUserId(int id)
+        {
+            // Arrange
+            TransferSqlDAO dao = new TransferSqlDAO(connectionString);
+
+            // Act
+            IList<Transfer> transferList = dao.GetAllTransfers(id, true);
 
             // Assert
             Assert.IsTrue(transferList.Count == 0);
