@@ -48,6 +48,15 @@ namespace TenmoServer.DAO
                 throw e;
             }
 
+            if (transfer.TransferStatus.ToLower().Equals("approved"))
+            {
+                updateComplete = ExecuteTransfer(transfer);
+            }
+            else
+            {
+                throw new Exception("Error, could not carry out transfer.");
+            }
+
             return updateComplete;
         }
 
@@ -165,7 +174,18 @@ namespace TenmoServer.DAO
                 throw e;
             }
 
-            return transfer;
+            bool executed = ExecuteTransfer(transfer);
+
+            if (executed)
+            {
+                return transfer;
+            }
+            else
+            {
+                throw new Exception("Error, could not carry out transfer.");
+            }
+
+            return null;
         }
 
         private Transfer ConvertReaderToTransfer(SqlDataReader reader)
@@ -231,7 +251,7 @@ namespace TenmoServer.DAO
                                 "from accounts " +
                                 "where user_id = @userFromId " +
                                 "and user_id = @userToId; " +
-                                "select scope_Itenditiy();";
+                                "select scope_Identity();";
                             SqlCommand cmd = new SqlCommand(sqlText, conn);
                             cmd.Parameters.AddWithValue("@userFromId", transfer.UserFromId);
                             cmd.Parameters.AddWithValue("@userToId", transfer.UserToId);
@@ -252,13 +272,40 @@ namespace TenmoServer.DAO
                             cmd.Parameters.AddWithValue("@userToId", transfer.UserToId);
 
                             // Get final sum of balances for comparision.
+                            sqlText = "select sum(balance) " +
+                                "from accounts " +
+                                "where user_id = @userFromId " +
+                                "and user_id = @userToId; " +
+                                "select scope_Itenditiy();";
+                            cmd = new SqlCommand(sqlText, conn);
+                            cmd.Parameters.AddWithValue("@userFromId", transfer.UserFromId);
+                            cmd.Parameters.AddWithValue("@userToId", transfer.UserToId);
+                            finalSum = Convert.ToDecimal(cmd.ExecuteScalar());
                         }
                     }
                     catch (Exception e)
                     {
                         throw e;
                     }
+
+                    if (initSum == finalSum)
+                    {
+                        transaction.Complete();
+                        txComplete = true;
+                    }
+                    else
+                    {
+                        transaction.Dispose();
+                    }
                 }
+                else
+                {
+                    throw new Exception("Sorry, insufficient funds.");
+                }
+            }
+            else
+            {
+                throw new Exception("Sorry, transfer not yet approved.");
             }
 
             return txComplete;

@@ -12,7 +12,7 @@ namespace TenmoServerTests.TransferSqlDAOTests
     public class UpdateTransferTests : DAOTestClass
     {
         [TestMethod]
-        public void Happypath()
+        public void HappyPath()
         {
             // Arrange
             TransferSqlDAO dao = new TransferSqlDAO(connectionString);
@@ -20,7 +20,10 @@ namespace TenmoServerTests.TransferSqlDAOTests
             {
                 TransferId = TestTransfer.TransferId,
                 TransferType = "send",
-                TransferStatus = "approved" // This is the part that gets updated.
+                TransferStatus = "approved", // This is the part that gets updated.
+                UserFromId = TestUser1.UserId,
+                UserToId = TestUser2.UserId,
+                Amount = 50.00M
             };
 
             // Act
@@ -40,6 +43,8 @@ namespace TenmoServerTests.TransferSqlDAOTests
                 TransferId = TestTransfer.TransferId,
                 TransferType = "request",
                 TransferStatus = "approved",
+                UserFromId = TestUser1.UserId,
+                UserToId = TestUser2.UserId,
                 Amount = 1000.00M
             };
 
