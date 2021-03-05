@@ -183,7 +183,10 @@ or user_id = (
 rollback transaction;
 
 
-select transfer_id, type.transfer_type_desc, status.transfer_status_desc, userfrom.user_id, userto.user_id, amount
+select transfer_id, type.transfer_type_desc, status.transfer_status_desc,
+userfrom.username as userfrom, userfrom.user_id as userfromid,
+userto.username as userto, userto.user_id as usertoid,
+amount
 from transfers
 join transfer_types as type on transfers.transfer_type_id = type.transfer_type_id
 join transfer_statuses as status on transfers.transfer_status_id = status.transfer_status_id

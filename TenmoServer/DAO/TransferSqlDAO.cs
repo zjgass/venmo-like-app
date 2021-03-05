@@ -82,7 +82,7 @@ namespace TenmoServer.DAO
                         "join users as userto on accto.user_id = userto.user_id " +
                         "where (userfrom.user_id = @userId " +
                         "or userto.user_id = @userId) ";
-                    sqlText += "and status.transfer_status_desc " + (areComplete ? "= 'approved';" : "= 'pending';");
+                    sqlText += "and status.transfer_status_desc " + (areComplete ? "= 'approved';" : "= 'pending';"); //Add declined
                     SqlCommand cmd = new SqlCommand(sqlText, conn);
                     cmd.Parameters.AddWithValue("@userId", userId);
                     SqlDataReader reader = cmd.ExecuteReader();
@@ -157,13 +157,15 @@ namespace TenmoServer.DAO
                         "values ((select transfer_type_id from transfer_types where transfer_type_desc = @transferType), " +
                         "(select transfer_status_id from transfer_statuses where transfer_status_desc = @transferStatus)," +
                         "(select account_id from accounts where user_id = @userFromId), " +
-                        "(select account_id from accounts where user_id = @userToId)); " +
+                        "(select account_id from accounts where user_id = @userToId), " +
+                        "@amount); " +
                         "select scope_Identity();";
                     SqlCommand cmd = new SqlCommand(sqlText, conn);
                     cmd.Parameters.AddWithValue("@transferType", transfer.TransferType);
                     cmd.Parameters.AddWithValue("@transferStatus", transfer.TransferStatus);
-                    cmd.Parameters.AddWithValue("@author", transfer.UserFromId);
-                    cmd.Parameters.AddWithValue("@addresseeId", transfer.UserToId);
+                    cmd.Parameters.AddWithValue("@userFromId", transfer.UserFromId);
+                    cmd.Parameters.AddWithValue("@userToId", transfer.UserToId);
+                    cmd.Parameters.AddWithValue("@amount", transfer.Amount);
 
                     transfer.TransferId = Convert.ToInt32(cmd.ExecuteScalar());
                 }
@@ -250,7 +252,7 @@ namespace TenmoServer.DAO
                             string sqlText = "select sum(balance) " +
                                 "from accounts " +
                                 "where user_id = @userFromId " +
-                                "and user_id = @userToId; " +
+                                "or user_id = @userToId; " +
                                 "select scope_Identity();";
                             SqlCommand cmd = new SqlCommand(sqlText, conn);
                             cmd.Parameters.AddWithValue("@userFromId", transfer.UserFromId);
@@ -275,8 +277,8 @@ namespace TenmoServer.DAO
                             sqlText = "select sum(balance) " +
                                 "from accounts " +
                                 "where user_id = @userFromId " +
-                                "and user_id = @userToId; " +
-                                "select scope_Itenditiy();";
+                                "or user_id = @userToId; " +
+                                "select scope_Identity();";
                             cmd = new SqlCommand(sqlText, conn);
                             cmd.Parameters.AddWithValue("@userFromId", transfer.UserFromId);
                             cmd.Parameters.AddWithValue("@userToId", transfer.UserToId);
