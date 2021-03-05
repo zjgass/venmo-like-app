@@ -114,12 +114,75 @@ namespace TenmoClient
                 }
                 else if (menuSelection == send)
                 {
-                    API_Transfer sendTransfer = transferService.SendTEbucks();
+                    int userID;
+                    decimal amount;
+                    try
+                    {
+                        bool validInput = false;
+                        do
+                        {
+                            Console.Write("Please enter the Account Number for the Account you wish to send to: ");
+                            string _userID = Console.ReadLine();
+                            Console.Write("Please Enter the amount you wish to send: ");
+                            string _amount = Console.ReadLine();
+                            userID = int.Parse(_userID);
+                            amount = decimal.Parse(_amount);
+                            if(userID != 0 && amount != 0)
+                            {
+                                validInput = true;
+                            }
+                            else
+                            {
+                                Console.WriteLine("Please enter a valid User ID and Amount");
+                            }
+                        } while (!validInput);
+                        
+                    }
+                    catch (Exception)
+                    {
+
+                        throw;
+                    }
+                    
+                 
+                    API_Transfer sendTransfer = transferService.SendTEbucks(userID,amount);
                     Console.WriteLine(sendTransfer);
                 }
                 else if (menuSelection == request)
                 {
+                    int userID;
+                    decimal amount;
+                    try
+                    {
+                        bool validInput = false;
+                        do
+                        {
+                            Console.Write("Please enter the Account Number for the Account you wish to Request from: ");
+                            string _userID = Console.ReadLine();
+                            Console.Write("Please Enter the amount you wish to Request: ");
+                            string _amount = Console.ReadLine();
+                            userID = int.Parse(_userID);
+                            amount = decimal.Parse(_amount);
+                            if (userID != 0 && amount != 0)
+                            {
+                                validInput = true;
+                            }
+                            else
+                            {
+                                Console.WriteLine("Please enter a valid User ID and Amount");
+                            }
+                        } while (!validInput);
 
+                    }
+                    catch (Exception)
+                    {
+
+                        throw;
+                    }
+
+
+                    API_Transfer requestTransfer = transferService.RequestTransfer(userID, amount);
+                    Console.WriteLine(requestTransfer);
                 }
                 else if (menuSelection == logOut)
                 {
