@@ -203,3 +203,14 @@ or userto.user_id = (select user_id from users where username = 'test1'))
 --or account_to = (select account_id from accounts where user_id = (select user_id from users where username = 'test1'))));
 
 --and transfer_id = @transferId;
+
+
+
+
+select sum(balance) as totalbalance
+from accounts
+where user_id = 1
+or user_id = 521;
+select scope_Identity();
+
+select * from accounts;
