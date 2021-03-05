@@ -183,7 +183,10 @@ or user_id = (
 rollback transaction;
 
 
-select transfer_id, type.transfer_type_desc, status.transfer_status_desc, userfrom.user_id, userto.user_id, amount
+select transfer_id, type.transfer_type_desc, status.transfer_status_desc,
+userfrom.username as userfrom, userfrom.user_id as userfromid,
+userto.username as userto, userto.user_id as usertoid,
+amount
 from transfers
 join transfer_types as type on transfers.transfer_type_id = type.transfer_type_id
 join transfer_statuses as status on transfers.transfer_status_id = status.transfer_status_id
@@ -200,3 +203,14 @@ or userto.user_id = (select user_id from users where username = 'test1'))
 --or account_to = (select account_id from accounts where user_id = (select user_id from users where username = 'test1'))));
 
 --and transfer_id = @transferId;
+
+
+
+
+select sum(balance) as totalbalance
+from accounts
+where user_id = 1
+or user_id = 521;
+select scope_Identity();
+
+select * from accounts;

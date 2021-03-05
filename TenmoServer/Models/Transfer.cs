@@ -8,9 +8,11 @@ namespace TenmoServer.Models
     public class Transfer
     {
         public int TransferId { get; set; }
+        [Required(ErrorMessage = "Must select transfer type.")]
         public string TransferType { get; set; }
         public string TransferStatus { get; set; }
         public string UserFrom { get; set; }
+        [Required(ErrorMessage = "Must select user to transfer from.")]
         public int UserFromId { get; set; }
         public string UserTo { get; set; }
         public int UserToId { get; set; }
