@@ -12,7 +12,7 @@ namespace TenmoServer.Controllers
     [Route("api/[Controller]")]
     [ApiController]
     [Authorize]
-    public class AccountController
+    public class AccountController : ControllerBase
     {
         private readonly IAccountDAO accountDAO;
 
@@ -21,10 +21,27 @@ namespace TenmoServer.Controllers
             accountDAO = _accountDAO;
         }
 
-        [HttpGet("{id}")]
-        public Account GetCurrentUserAccount(int id)
+        [HttpGet]
+        public ActionResult<Account> GetCurrentUserAccount()
         {
-            return accountDAO.GetAccount(id);
+            int userId = 0;
+            try
+            {
+                userId = Int32.Parse(User.FindFirst("sub").Value);
+            }
+            catch (Exception)
+            {
+                return BadRequest();
+            }
+
+            Account account = accountDAO.GetAccount(userId);
+
+            if (account != null)
+            {
+                return Ok(account);
+            }
+
+            return NotFound();
         }
     }
 }

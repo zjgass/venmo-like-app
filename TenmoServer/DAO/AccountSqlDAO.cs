@@ -62,13 +62,40 @@ namespace TenmoServer.DAO
         public Account Deposit(Account account, decimal amountToDeposit)
         {
             account.Balance += amountToDeposit;
+            HelperUpdateBalance(account.Balance, account.Account_Id);
             return account;
         }
 
         public Account Withdraw(Account account, decimal amountToWidthdraw)
         {
             account.Balance -= amountToWidthdraw;
+            HelperUpdateBalance(account.Balance, account.Account_Id);
             return account;
+        }
+
+        private bool HelperUpdateBalance(decimal amount, int accountId)
+        {
+            bool successful = false;
+
+            try
+            {
+                using (SqlConnection conn = new SqlConnection(connectionString))
+                {
+                    conn.Open();
+
+                    string sqlText = "Update accounts set balance = @newBalance " +
+                        "where account_id = @accountId;";
+                    SqlCommand cmd = new SqlCommand(sqlText, conn);
+                    cmd.Parameters.AddWithValue("@newBalance", amount);
+                    cmd.Parameters.AddWithValue("@accountId", accountId);
+                }
+            }
+            catch (Exception e)
+            {
+                throw e;
+            }
+
+            return successful;
         }
     }
 }

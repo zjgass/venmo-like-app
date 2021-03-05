@@ -10,7 +10,7 @@ namespace TenmoServer.DAO
     {
         Transfer NewTransfer(Transfer transfer);
         bool UpdateTransfer(Transfer transfer);
-        List<Transfer> GetAllTransfers(string userName, bool areComplete);
-        Transfer GetTransfer(string userName, int transferId);
+        List<Transfer> GetAllTransfers(int userId, bool areComplete);
+        Transfer GetTransfer(int userId, int transferId);
     }
 }
