@@ -48,15 +48,6 @@ namespace TenmoServer.DAO
                 throw e;
             }
 
-            if (transfer.TransferStatus.ToLower().Equals("approved"))
-            {
-                updateComplete = ExecuteTransfer(transfer);
-            }
-            else
-            {
-                throw new Exception("Error, could not carry out transfer.");
-            }
-
             return updateComplete;
         }
 

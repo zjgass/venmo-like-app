@@ -93,6 +93,7 @@ namespace TenmoServer.Controllers
         [HttpPost]
         public ActionResult<Transfer> SendTransfer(Transfer transfer)
         {
+            bool success = false;
             int userId = 0;
             try
             {
@@ -107,8 +108,21 @@ namespace TenmoServer.Controllers
             {
                 transfer.TransferType = "Send";
                 transfer.TransferStatus = "Approved";
-                transfer = transferDao.NewTransfer(transfer);
 
+                try
+                {
+                    success = ExecuteTransfer(transfer);
+                }
+                catch (Exception e)
+                {
+                    return BadRequest(e.Message);
+                }
+
+                if (success)
+                {
+                    transfer = CreateTransfer(transfer);
+                }
+                
                 return CreatedAtRoute("GetTransfer", new { id = transfer.TransferId }, transfer);
             }
 
@@ -141,6 +155,8 @@ namespace TenmoServer.Controllers
         [HttpPut("{id}")]
         public ActionResult<Transfer> UpdateTransfer(Transfer transfer)
         {
+            bool success = false;
+            bool updated = false;
             int userId = 0;
             try
             {
@@ -153,18 +169,31 @@ namespace TenmoServer.Controllers
 
             if (transfer.TransferStatus != "pending" && transfer.UserFromId == userId)
             {
-                bool updateComplete = transferDao.UpdateTransfer(transfer);
-                return CreatedAtRoute("GetTransfer", new { id = transfer.TransferId }, transfer);
+                if (transfer.TransferStatus.ToLower().Equals("approved"))
+                {
+                    success = ExecuteTransfer(transfer);
+                    if (success)
+                    {
+                        updated = transferDao.UpdateTransfer(transfer);
+                    }
+                    
+                }
+
+                if (updated)
+                {
+                    return CreatedAtRoute("GetTransfer", new { id = transfer.TransferId }, transfer);
+                }
             }
 
             return BadRequest();
         }
 
-        private Transfer ExecuteTransfer(Transfer transfer)
+        private bool ExecuteTransfer(Transfer transfer)
         {
+            bool executeSuccessful = false;
             decimal balance = accountDAO.GetAccount(transfer.UserFromId).Balance;
 
-            if (transfer.Amount < balance)
+            if (transfer.Amount > balance)
             {
                 throw new Exception("Insufficient funds.");
             }
@@ -173,7 +202,7 @@ namespace TenmoServer.Controllers
             {
                 // Get the sum of the initial balances to do a check.
                 decimal initSum = accountDAO.GetAccount(transfer.UserFromId).Balance
-                                    + accountDAO.GetAccount(transfer.UserToId).Balance;
+                                + accountDAO.GetAccount(transfer.UserToId).Balance;
 
                 // Deposit.
                 Account toAccount = accountDAO.GetAccount(transfer.UserToId);
@@ -185,20 +214,29 @@ namespace TenmoServer.Controllers
 
                 // Get the sum of the final balance to do a check.
                 decimal finalSum = accountDAO.GetAccount(transfer.UserFromId).Balance
-                                    + accountDAO.GetAccount(transfer.UserToId).Balance;
+                                 + accountDAO.GetAccount(transfer.UserToId).Balance;
 
                 // Verify the sum of balances are equal.
                 if (initSum == finalSum)
                 {
                     transaction.Complete();
+                    executeSuccessful = true;
                 }
                 else
                 {
                     transaction.Dispose();
+                    throw new Exception("Sorry error, please try again.");
                 }
 
-                return transfer;
+                return executeSuccessful;
             }
+        }
+
+        private Transfer CreateTransfer(Transfer transfer)
+        {
+            transfer = transferDao.NewTransfer(transfer);
+
+            return transfer;
         }
     }
 }

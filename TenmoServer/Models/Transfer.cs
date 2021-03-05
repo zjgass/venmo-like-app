@@ -15,11 +15,14 @@ namespace TenmoServer.Models
         public string TransferStatus { get; set; }
         public string UserFrom { get; set; }
         [Required(ErrorMessage = "Must include a user to transfer from.")]
+        [Range(1, Int32.MaxValue)]
         public int UserFromId { get; set; }
         public string UserTo { get; set; }
         [Required(ErrorMessage = "Must include a user to transfer to.")]
+        [Range(1, Int32.MaxValue)]
         public int UserToId { get; set; }
         [Required(ErrorMessage = "Must include an amount to transfer.")]
+        [Range(0.01, double.MaxValue)]
         public decimal Amount { get; set; }
     }
 }
