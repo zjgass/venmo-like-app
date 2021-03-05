@@ -11,6 +11,7 @@ namespace TenmoClient
         private static readonly ConsoleService consoleService = new ConsoleService();
         private static readonly AuthService authService = new AuthService();
         private readonly AccountService accountService = new AccountService();
+        private readonly TransferService transferService = new TransferService();
 
         public void Run()
         {
@@ -97,15 +98,24 @@ namespace TenmoClient
                 }
                 else if (menuSelection == pastTransactions)
                 {
-
+                    List<API_Transfer> pastTransfers = transferService.GetPastTransfers();
+                    foreach(API_Transfer transfer in pastTransfers)
+                    {
+                        Console.WriteLine(transfer);
+                    }
                 }
                 else if (menuSelection == pendingRequests)
                 {
-
+                    List<API_Transfer> pendingTransfers = transferService.GetPendingTransers();
+                    foreach (API_Transfer transfer in pendingTransfers)
+                    {
+                        Console.WriteLine(transfer);
+                    }
                 }
                 else if (menuSelection == send)
                 {
-
+                    API_Transfer sendTransfer = transferService.SendTEbucks();
+                    Console.WriteLine(sendTransfer);
                 }
                 else if (menuSelection == request)
                 {
