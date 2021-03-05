@@ -117,11 +117,8 @@ namespace TenmoServer.DAO
             {
                 UserId = Convert.ToInt32(reader["user_id"]),
                 Username = Convert.ToString(reader["username"]),
-                // Why were these being passed around?
-                // A user does not need to know the PasswordHash or Salt
-                // of any other user.
-                //PasswordHash = Convert.ToString(reader["password_hash"]),
-                //Salt = Convert.ToString(reader["salt"]),
+                PasswordHash = Convert.ToString(reader["password_hash"]),
+                Salt = Convert.ToString(reader["salt"]),
             };
 
             return u;

@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Data.SqlClient;
 using System.Linq;
 using System.Threading.Tasks;
+using System.Transactions;
 using TenmoServer.Models;
 
 namespace TenmoServer.DAO
@@ -77,14 +78,15 @@ namespace TenmoServer.DAO
 
             try
             {
+                using (TransactionScope transaction = new TransactionScope())
                 using (SqlConnection conn = new SqlConnection(connectionString))
                 {
                     conn.Open();
 
-                    string sqlText = "Update accounts set balance = @newBalance " +
-                        "where account_id = @accountId;";
+                    string sqlText = "update accounts set balance = @amount " +
+                                    "where account_id = @accountId;";
                     SqlCommand cmd = new SqlCommand(sqlText, conn);
-                    cmd.Parameters.AddWithValue("@newBalance", amount);
+                    cmd.Parameters.AddWithValue("@amount", amount);
                     cmd.Parameters.AddWithValue("@accountId", accountId);
                 }
             }
