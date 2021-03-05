@@ -11,5 +11,6 @@ namespace TenmoServer.DAO
         Account GetAccount(int userId);
         Account Deposit(Account account, decimal amountToDeposit);
         Account Withdraw(Account account, decimal amountToWidthdraw);
+
     }
 }
