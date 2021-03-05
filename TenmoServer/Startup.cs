@@ -55,6 +55,7 @@ namespace TenmoServer
             services.AddSingleton<IPasswordHasher>(ph => new PasswordHasher());
             services.AddTransient<IUserDAO>(m => new UserSqlDAO(connectionString));
             services.AddTransient<ITransferDAO>(m => new TransferSqlDAO(connectionString));
+            services.AddTransient<IAccountDAO>(mbox => new AccountSqlDAO(connectionString));
             //services.AddTransient<ITransferDAO, TransferSqlDAO>(); // This was from the C# book.
         }
 
