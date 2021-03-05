@@ -252,13 +252,40 @@ namespace TenmoServer.DAO
                             cmd.Parameters.AddWithValue("@userToId", transfer.UserToId);
 
                             // Get final sum of balances for comparision.
+                            sqlText = "select sum(balance) " +
+                                "from accounts " +
+                                "where user_id = @userFromId " +
+                                "and user_id = @userToId; " +
+                                "select scope_Itenditiy();";
+                            cmd = new SqlCommand(sqlText, conn);
+                            cmd.Parameters.AddWithValue("@userFromId", transfer.UserFromId);
+                            cmd.Parameters.AddWithValue("@userToId", transfer.UserToId);
+                            finalSum = Convert.ToDecimal(cmd.ExecuteScalar());
                         }
                     }
                     catch (Exception e)
                     {
                         throw e;
                     }
+
+                    if (initSum == finalSum)
+                    {
+                        transaction.Complete();
+                        txComplete = true;
+                    }
+                    else
+                    {
+                        transaction.Dispose();
+                    }
                 }
+                else
+                {
+                    throw new Exception("Sorry, insufficient funds.");
+                }
+            }
+            else
+            {
+                throw new Exception("Sorry, transfer not yet approved.");
             }
 
             return txComplete;
