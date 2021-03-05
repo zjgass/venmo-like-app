@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Text;
 using RestSharp;
+using RestSharp.Authenticators;
 using TenmoClient.Data;
 
 namespace TenmoClient
@@ -13,6 +14,8 @@ namespace TenmoClient
 
         public API_Account GetAccountBalance()
         {
+            client.Authenticator = new JwtAuthenticator(UserService.GetToken());
+
             RestRequest request = new RestRequest(API_BASE_URL + "api/account");
             IRestResponse<API_Account> balance = client.Get<API_Account>(request);
             return balance.Data;
