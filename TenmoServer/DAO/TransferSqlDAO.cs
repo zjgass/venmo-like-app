@@ -217,6 +217,7 @@ namespace TenmoServer.DAO
                     transaction = new TransactionScope();
 
                     decimal initSum = 0;
+                    decimal finalSum = 0;
 
                     try
                     {
@@ -236,8 +237,21 @@ namespace TenmoServer.DAO
                             cmd.Parameters.AddWithValue("@userToId", transfer.UserToId);
                             initSum = Convert.ToDecimal(cmd.ExecuteScalar());
 
-                            // Now we begin the withdrawl.
+                            // Withdrawl.
+                            sqlText = "update accounts set balance = (balance - @amount) " +
+                                "where user_id = @userFromId;";
+                            cmd = new SqlCommand(sqlText, conn);
+                            cmd.Parameters.AddWithValue("@amount", transfer.Amount);
+                            cmd.Parameters.AddWithValue("@userFromId", transfer.UserFromId);
 
+                            // Deposit.
+                            sqlText = "update accounts set balance = (balance + @amount) " +
+                                "where user_id = @userToId;";
+                            cmd = new SqlCommand(sqlText, conn);
+                            cmd.Parameters.AddWithValue("@amount", transfer.Amount);
+                            cmd.Parameters.AddWithValue("@userToId", transfer.UserToId);
+
+                            // Get final sum of balances for comparision.
                         }
                     }
                     catch (Exception e)

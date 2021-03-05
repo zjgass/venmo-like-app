@@ -29,7 +29,7 @@ namespace TenmoServer.DAO
                 {
                     conn.Open();
 
-                    SqlCommand cmd = new SqlCommand("SELECT account_id, user_id, ballance FROM accounts WHERE user_id = @userid", conn);
+                    SqlCommand cmd = new SqlCommand("SELECT account_id, user_id, balance FROM accounts WHERE user_id = @userid", conn);
                     cmd.Parameters.AddWithValue("@userid", userId);
                     SqlDataReader reader = cmd.ExecuteReader();
 
