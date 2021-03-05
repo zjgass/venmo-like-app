@@ -87,7 +87,8 @@ namespace TenmoClient
                 }
                 else if (menuSelection == 1)
                 {
-                    Console.WriteLine("Balance: " + accountService.GetAccountBalance().Balance);
+                    API_Account currentBalance = accountService.GetAccountBalance();
+                    Console.WriteLine("Balance: " + currentBalance.Balance);
                 }
                 else if (menuSelection == 2)
                 {
