@@ -22,9 +22,19 @@ namespace TenmoServer.Controllers
         }
 
         [HttpGet]
-        public ActionResult<List<ToClientTransfer>> GetAllCompletedTransfers()
+        public ActionResult<List<Transfer>> GetAllCompletedTransfers()
         {
-            List<ToClientTransfer> transfers = dao.GetAllTransfers(User.Identity.Name, true);
+            int userId = 0;
+            try
+            {
+                userId = Int32.Parse(User.FindFirst("sub").Value);
+            }
+            catch (Exception)
+            {
+                return BadRequest();
+            }
+
+            List<Transfer> transfers = dao.GetAllTransfers(userId, true);
 
             if (transfers != null)
             {
@@ -34,9 +44,19 @@ namespace TenmoServer.Controllers
             return BadRequest();
         }
         [HttpGet("pending")]
-        public ActionResult<List<ToClientTransfer>> GetAllPendingTransfers()
+        public ActionResult<List<Transfer>> GetAllPendingTransfers()
         {
-            List<ToClientTransfer> transfers = dao.GetAllTransfers(User.Identity.Name, false);
+            int userId = 0;
+            try
+            {
+                userId = Int32.Parse(User.FindFirst("sub").Value);
+            }
+            catch (Exception)
+            {
+                return BadRequest();
+            }
+
+            List<Transfer> transfers = dao.GetAllTransfers(userId, false);
 
             if (transfers != null)
             {
@@ -46,9 +66,19 @@ namespace TenmoServer.Controllers
             return BadRequest();
         }
         [HttpGet("{id}", Name = "GetTransfer")]
-        public ActionResult<ToClientTransfer> GetTransfer(int id)
+        public ActionResult<Transfer> GetTransfer(int id)
         {
-            ToClientTransfer transfer = dao.GetTransfer(User.Identity.Name, id);
+            int userId = 0;
+            try
+            {
+                userId = Int32.Parse(User.FindFirst("sub").Value);
+            }
+            catch (Exception)
+            {
+                return BadRequest();
+            }
+
+            Transfer transfer = dao.GetTransfer(userId, id);
 
             if (transfer != null)
             {
@@ -58,37 +88,67 @@ namespace TenmoServer.Controllers
             return NotFound();
         }
         [HttpPost]
-        public ActionResult<ToClientTransfer> SendTransfer(FromClientTransfer transferIn)
+        public ActionResult<Transfer> SendTransfer(Transfer transfer)
         {
-            if (User.Identity.Name == transferIn.Author)
+            int userId = 0;
+            try
             {
-                transferIn.TransferType = "Send";
-                transferIn.TransferStatus = "Approved";
-                ToClientTransfer transferOut = dao.NewTransfer(transferIn);
+                userId = Int32.Parse(User.FindFirst("sub").Value);
+            }
+            catch (Exception)
+            {
+                return BadRequest();
+            }
 
-                return CreatedAtRoute("GetTransfer", new { id = transferOut.TransferId }, transferOut);
+            if (userId == transfer.UserFromId)
+            {
+                transfer.TransferType = "Send";
+                transfer.TransferStatus = "Approved";
+                transfer = dao.NewTransfer(transfer);
+
+                return CreatedAtRoute("GetTransfer", new { id = transfer.TransferId }, transfer);
             }
 
             return BadRequest();
         }
         [HttpPost("request")]
-        public ActionResult<ToClientTransfer> RequestTransfer(FromClientTransfer transferIn)
+        public ActionResult<Transfer> RequestTransfer(Transfer transfer)
         {
-            if (User.Identity.Name == transferIn.Author)
+            int userId = 0;
+            try
             {
-                transferIn.TransferType = "Request";
-                transferIn.TransferStatus = "Pending";
-                ToClientTransfer transferOut = dao.NewTransfer(transferIn);
+                userId = Int32.Parse(User.FindFirst("sub").Value);
+            }
+            catch (Exception)
+            {
+                return BadRequest();
+            }
 
-                return CreatedAtRoute("GetTransfer", new { id = transferOut.TransferId }, transferOut);
+            if (userId == transfer.UserToId)
+            {
+                transfer.TransferType = "Request";
+                transfer.TransferStatus = "Pending";
+                transfer = dao.NewTransfer(transfer);
+
+                return CreatedAtRoute("GetTransfer", new { id = transfer.TransferId }, transfer);
             }
 
             return BadRequest();
         }
         [HttpPut("{id}")]
-        public ActionResult<ToClientTransfer> UpdateTransfer(FromClientTransfer transfer)
+        public ActionResult<Transfer> UpdateTransfer(Transfer transfer)
         {
-            if (transfer.TransferStatus != "pending" && transfer.Author == User.Identity.Name)
+            int userId = 0;
+            try
+            {
+                userId = Int32.Parse(User.FindFirst("sub").Value);
+            }
+            catch (Exception)
+            {
+                return BadRequest();
+            }
+
+            if (transfer.TransferStatus != "pending" && transfer.UserFromId == userId)
             {
                 bool updateComplete = dao.UpdateTransfer(transfer);
                 return CreatedAtRoute("GetTransfer", new { id = transfer.TransferId }, transfer);

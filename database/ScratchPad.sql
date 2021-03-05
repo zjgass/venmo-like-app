@@ -183,8 +183,7 @@ or user_id = (
 rollback transaction;
 
 
-select transfer_id, type.transfer_type_desc, status.transfer_status_desc,
-userfrom.username, userto.username, amount
+select transfer_id, type.transfer_type_desc, status.transfer_status_desc, userfrom.user_id, userto.user_id, amount
 from transfers
 join transfer_types as type on transfers.transfer_type_id = type.transfer_type_id
 join transfer_statuses as status on transfers.transfer_status_id = status.transfer_status_id
@@ -194,6 +193,10 @@ join users as userfrom on accfrom.user_id = userfrom.user_id
 join users as userto on accto.user_id = userto.user_id
 where (userfrom.user_id = (select user_id from users where username = 'test1')
 or userto.user_id = (select user_id from users where username = 'test1'))
-and status.transfer_status_desc = 'pending';
 
-and transfer_id = @transferId;
+
+--and transfer_id = (select top 1 transfer_id from transfers where (account_from =
+--(select account_id from accounts where user_id = (select user_id from users where username = 'test1'))
+--or account_to = (select account_id from accounts where user_id = (select user_id from users where username = 'test1'))));
+
+--and transfer_id = @transferId;
