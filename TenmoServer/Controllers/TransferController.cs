@@ -198,37 +198,44 @@ namespace TenmoServer.Controllers
                 throw new Exception("Insufficient funds.");
             }
 
-            using(TransactionScope transaction = new TransactionScope())
+            try
             {
-                // Get the sum of the initial balances to do a check.
-                decimal initSum = accountDAO.GetAccount(transfer.UserFromId).Balance
-                                + accountDAO.GetAccount(transfer.UserToId).Balance;
-
-                // Deposit.
-                Account toAccount = accountDAO.GetAccount(transfer.UserToId);
-                accountDAO.Deposit(toAccount, transfer.Amount);
-
-                // Withdraw.
-                Account fromAccount = accountDAO.GetAccount(transfer.UserFromId);
-                accountDAO.Withdraw(fromAccount, transfer.Amount);
-
-                // Get the sum of the final balance to do a check.
-                decimal finalSum = accountDAO.GetAccount(transfer.UserFromId).Balance
-                                 + accountDAO.GetAccount(transfer.UserToId).Balance;
-
-                // Verify the sum of balances are equal.
-                if (initSum == finalSum)
+                using (TransactionScope transaction = new TransactionScope())
                 {
-                    transaction.Complete();
-                    executeSuccessful = true;
-                }
-                else
-                {
-                    transaction.Dispose();
-                    throw new Exception("Sorry error, please try again.");
-                }
+                    // Get the sum of the initial balances to do a check.
+                    decimal initSum = accountDAO.GetAccount(transfer.UserFromId).Balance
+                                    + accountDAO.GetAccount(transfer.UserToId).Balance;
 
-                return executeSuccessful;
+                    // Deposit.
+                    Account toAccount = accountDAO.GetAccount(transfer.UserToId);
+                    accountDAO.Deposit(toAccount, transfer.Amount);
+
+                    // Withdraw.
+                    Account fromAccount = accountDAO.GetAccount(transfer.UserFromId);
+                    accountDAO.Withdraw(fromAccount, transfer.Amount);
+
+                    // Get the sum of the final balance to do a check.
+                    decimal finalSum = accountDAO.GetAccount(transfer.UserFromId).Balance
+                                     + accountDAO.GetAccount(transfer.UserToId).Balance;
+
+                    // Verify the sum of balances are equal.
+                    if (initSum == finalSum)
+                    {
+                        transaction.Complete();
+                        executeSuccessful = true;
+                    }
+                    else
+                    {
+                        transaction.Dispose();
+                        throw new Exception("Sorry error, please try again.");
+                    }
+
+                    return executeSuccessful;
+                }
+            }
+            catch (Exception)
+            {
+                throw;
             }
         }
 
