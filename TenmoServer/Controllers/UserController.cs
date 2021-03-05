@@ -14,11 +14,11 @@ namespace TenmoServer.Controllers
     [Authorize]
     public class UserController : Controller
     {
-        private readonly IUserDAO dao;
+        private readonly IUserDAO userDao;
 
-        public UserController(IUserDAO userDao)
+        public UserController(IUserDAO _userDao)
         {
-            dao = userDao;
+            userDao = _userDao;
         }
 
         [HttpGet]
@@ -30,7 +30,7 @@ namespace TenmoServer.Controllers
                 Username = User.FindFirst("username").Value
             };
 
-            List<User> users = dao.GetUsers();
+            List<User> users = userDao.GetUsers();
 
             if (users != null)
             {

@@ -176,18 +176,7 @@ namespace TenmoServer.DAO
                 throw e;
             }
 
-            bool executed = ExecuteTransfer(transfer);
-
-            if (executed)
-            {
-                return transfer;
-            }
-            else
-            {
-                throw new Exception("Error, could not carry out transfer.");
-            }
-
-            return null;
+            return transfer;
         }
 
         private Transfer ConvertReaderToTransfer(SqlDataReader reader)
@@ -205,113 +194,6 @@ namespace TenmoServer.DAO
             };
 
             return transfer;
-        }
-
-        private bool ExecuteTransfer(Transfer transfer)
-        {
-            bool txComplete = false;
-
-            if (transfer.TransferStatus.ToLower().Equals("approved"))
-            {
-                decimal balance = 0;
-                try
-                {
-                    using(SqlConnection conn = new SqlConnection(connectionString))
-                    {
-                        conn.Open();
-
-                        string sqlText = "select balance from accounts " +
-                            "where user_id = @userFromId; " +
-                            "select scope_Identity();";
-                        SqlCommand cmd = new SqlCommand(sqlText, conn);
-                        cmd.Parameters.AddWithValue("@userFromId", transfer.UserFromId);
-
-                        balance = Convert.ToDecimal(cmd.ExecuteScalar());
-                    }
-                }
-                catch (Exception e)
-                {
-                    throw e;
-                }
-
-                if (transfer.Amount <= balance)
-                {
-                    using (transaction = new TransactionScope())
-                    {
-                        decimal initSum = 0;
-                        decimal finalSum = 0;
-
-                        try
-                        {
-                            using (SqlConnection conn = new SqlConnection(connectionString))
-                            {
-                                conn.Open();
-
-                                // This is to check the initial sum of the balances. If this does not match the balance
-                                // at the end the transaction will be rolled back.
-                                string sqlText = "select sum(balance) " +
-                                    "from accounts " +
-                                    "where user_id = @userFromId " +
-                                    "or user_id = @userToId; " +
-                                    "select scope_Identity();";
-                                SqlCommand cmd = new SqlCommand(sqlText, conn);
-                                cmd.Parameters.AddWithValue("@userFromId", transfer.UserFromId);
-                                cmd.Parameters.AddWithValue("@userToId", transfer.UserToId);
-                                initSum = Convert.ToDecimal(cmd.ExecuteScalar());
-
-                                // Withdrawl.
-                                sqlText = "update accounts set balance = (balance - @amount) " +
-                                    "where user_id = @userFromId;";
-                                cmd = new SqlCommand(sqlText, conn);
-                                cmd.Parameters.AddWithValue("@amount", transfer.Amount);
-                                cmd.Parameters.AddWithValue("@userFromId", transfer.UserFromId);
-
-                                // Deposit.
-                                sqlText = "update accounts set balance = (balance + @amount) " +
-                                    "where user_id = @userToId;";
-                                cmd = new SqlCommand(sqlText, conn);
-                                cmd.Parameters.AddWithValue("@amount", transfer.Amount);
-                                cmd.Parameters.AddWithValue("@userToId", transfer.UserToId);
-
-                                // Get final sum of balances for comparision.
-                                sqlText = "select sum(balance) " +
-                                    "from accounts " +
-                                    "where user_id = @userFromId " +
-                                    "or user_id = @userToId; " +
-                                    "select scope_Identity();";
-                                cmd = new SqlCommand(sqlText, conn);
-                                cmd.Parameters.AddWithValue("@userFromId", transfer.UserFromId);
-                                cmd.Parameters.AddWithValue("@userToId", transfer.UserToId);
-                                finalSum = Convert.ToDecimal(cmd.ExecuteScalar());
-                            }
-                        }
-                        catch (Exception e)
-                        {
-                            throw e;
-                        }
-
-                        if (initSum == finalSum)
-                        {
-                            transaction.Complete();
-                            txComplete = true;
-                        }
-                        else
-                        {
-                            transaction.Dispose();
-                        }
-                    }
-                }
-                else
-                {
-                    throw new Exception("Sorry, insufficient funds.");
-                }
-            }
-            else
-            {
-                throw new Exception("Sorry, transfer not yet approved.");
-            }
-
-            return txComplete;
         }
     }
 }
