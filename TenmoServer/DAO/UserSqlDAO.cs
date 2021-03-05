@@ -55,7 +55,7 @@ namespace TenmoServer.DAO
                 {
                     conn.Open();
 
-                    SqlCommand cmd = new SqlCommand("SELECT user_id, username, password_hash, salt FROM users", conn);
+                    SqlCommand cmd = new SqlCommand("SELECT user_id, username, FROM users", conn); // used to include passwordhash, salt
                     SqlDataReader reader = cmd.ExecuteReader();
 
                     if (reader.HasRows)
@@ -117,8 +117,11 @@ namespace TenmoServer.DAO
             {
                 UserId = Convert.ToInt32(reader["user_id"]),
                 Username = Convert.ToString(reader["username"]),
-                PasswordHash = Convert.ToString(reader["password_hash"]),
-                Salt = Convert.ToString(reader["salt"]),
+                // Why were these being passed around?
+                // A user does not need to know the PasswordHash or Salt
+                // of any other user.
+                //PasswordHash = Convert.ToString(reader["password_hash"]),
+                //Salt = Convert.ToString(reader["salt"]),
             };
 
             return u;

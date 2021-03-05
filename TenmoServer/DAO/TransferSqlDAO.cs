@@ -82,7 +82,7 @@ namespace TenmoServer.DAO
                         "join users as userto on accto.user_id = userto.user_id " +
                         "where (userfrom.user_id = @userId " +
                         "or userto.user_id = @userId) ";
-                    sqlText += "and status.transfer_status_desc " + (areComplete ? "= 'approved';" : "= 'pending';"); //Add declined
+                    sqlText += "and status.transfer_status_desc " + (areComplete ? "!= 'pending';" : "= 'pending';");
                     SqlCommand cmd = new SqlCommand(sqlText, conn);
                     cmd.Parameters.AddWithValue("@userId", userId);
                     SqlDataReader reader = cmd.ExecuteReader();
@@ -236,68 +236,69 @@ namespace TenmoServer.DAO
 
                 if (transfer.Amount <= balance)
                 {
-                    transaction = new TransactionScope();
-
-                    decimal initSum = 0;
-                    decimal finalSum = 0;
-
-                    try
+                    using (transaction = new TransactionScope())
                     {
-                        using (SqlConnection conn = new SqlConnection(connectionString))
+                        decimal initSum = 0;
+                        decimal finalSum = 0;
+
+                        try
                         {
-                            conn.Open();
+                            using (SqlConnection conn = new SqlConnection(connectionString))
+                            {
+                                conn.Open();
 
-                            // This is to check the initial sum of the balances. If this does not match the balance
-                            // at the end the transaction will be rolled back.
-                            string sqlText = "select sum(balance) " +
-                                "from accounts " +
-                                "where user_id = @userFromId " +
-                                "or user_id = @userToId; " +
-                                "select scope_Identity();";
-                            SqlCommand cmd = new SqlCommand(sqlText, conn);
-                            cmd.Parameters.AddWithValue("@userFromId", transfer.UserFromId);
-                            cmd.Parameters.AddWithValue("@userToId", transfer.UserToId);
-                            initSum = Convert.ToDecimal(cmd.ExecuteScalar());
+                                // This is to check the initial sum of the balances. If this does not match the balance
+                                // at the end the transaction will be rolled back.
+                                string sqlText = "select sum(balance) " +
+                                    "from accounts " +
+                                    "where user_id = @userFromId " +
+                                    "or user_id = @userToId; " +
+                                    "select scope_Identity();";
+                                SqlCommand cmd = new SqlCommand(sqlText, conn);
+                                cmd.Parameters.AddWithValue("@userFromId", transfer.UserFromId);
+                                cmd.Parameters.AddWithValue("@userToId", transfer.UserToId);
+                                initSum = Convert.ToDecimal(cmd.ExecuteScalar());
 
-                            // Withdrawl.
-                            sqlText = "update accounts set balance = (balance - @amount) " +
-                                "where user_id = @userFromId;";
-                            cmd = new SqlCommand(sqlText, conn);
-                            cmd.Parameters.AddWithValue("@amount", transfer.Amount);
-                            cmd.Parameters.AddWithValue("@userFromId", transfer.UserFromId);
+                                // Withdrawl.
+                                sqlText = "update accounts set balance = (balance - @amount) " +
+                                    "where user_id = @userFromId;";
+                                cmd = new SqlCommand(sqlText, conn);
+                                cmd.Parameters.AddWithValue("@amount", transfer.Amount);
+                                cmd.Parameters.AddWithValue("@userFromId", transfer.UserFromId);
 
-                            // Deposit.
-                            sqlText = "update accounts set balance = (balance + @amount) " +
-                                "where user_id = @userToId;";
-                            cmd = new SqlCommand(sqlText, conn);
-                            cmd.Parameters.AddWithValue("@amount", transfer.Amount);
-                            cmd.Parameters.AddWithValue("@userToId", transfer.UserToId);
+                                // Deposit.
+                                sqlText = "update accounts set balance = (balance + @amount) " +
+                                    "where user_id = @userToId;";
+                                cmd = new SqlCommand(sqlText, conn);
+                                cmd.Parameters.AddWithValue("@amount", transfer.Amount);
+                                cmd.Parameters.AddWithValue("@userToId", transfer.UserToId);
 
-                            // Get final sum of balances for comparision.
-                            sqlText = "select sum(balance) " +
-                                "from accounts " +
-                                "where user_id = @userFromId " +
-                                "or user_id = @userToId; " +
-                                "select scope_Identity();";
-                            cmd = new SqlCommand(sqlText, conn);
-                            cmd.Parameters.AddWithValue("@userFromId", transfer.UserFromId);
-                            cmd.Parameters.AddWithValue("@userToId", transfer.UserToId);
-                            finalSum = Convert.ToDecimal(cmd.ExecuteScalar());
+                                // Get final sum of balances for comparision.
+                                sqlText = "select sum(balance) " +
+                                    "from accounts " +
+                                    "where user_id = @userFromId " +
+                                    "or user_id = @userToId; " +
+                                    "select scope_Identity();";
+                                cmd = new SqlCommand(sqlText, conn);
+                                cmd.Parameters.AddWithValue("@userFromId", transfer.UserFromId);
+                                cmd.Parameters.AddWithValue("@userToId", transfer.UserToId);
+                                finalSum = Convert.ToDecimal(cmd.ExecuteScalar());
+                            }
                         }
-                    }
-                    catch (Exception e)
-                    {
-                        throw e;
-                    }
+                        catch (Exception e)
+                        {
+                            throw e;
+                        }
 
-                    if (initSum == finalSum)
-                    {
-                        transaction.Complete();
-                        txComplete = true;
-                    }
-                    else
-                    {
-                        transaction.Dispose();
+                        if (initSum == finalSum)
+                        {
+                            transaction.Complete();
+                            txComplete = true;
+                        }
+                        else
+                        {
+                            transaction.Dispose();
+                        }
                     }
                 }
                 else
