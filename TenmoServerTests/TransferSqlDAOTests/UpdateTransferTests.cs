@@ -19,10 +19,10 @@ namespace TenmoServerTests.TransferSqlDAOTests
             Transfer updatedTransfer = new Transfer()
             {
                 TransferId = TestTransfer.TransferId,
-                TransferType = "send",
+                TransferType = "request",
                 TransferStatus = "approved", // This is the part that gets updated.
-                UserFromId = TestUser1.UserId,
-                UserToId = TestUser2.UserId,
+                UserFromId = TestTransfer.UserFromId,
+                UserToId = TestTransfer.UserToId,
                 Amount = 50.00M
             };
 
@@ -43,16 +43,36 @@ namespace TenmoServerTests.TransferSqlDAOTests
                 TransferId = TestTransfer.TransferId,
                 TransferType = "request",
                 TransferStatus = "approved",
-                UserFromId = TestUser1.UserId,
-                UserToId = TestUser2.UserId,
+                UserFromId = TestTransfer.UserFromId,
+                UserToId = TestTransfer.UserToId,
                 Amount = 1000.00M
             };
 
             // Act
             bool updateComplete = dao.UpdateTransfer(updatedTransfer);
+            decimal unchangedBalance = 0;
+
+            try
+            {
+                using(SqlConnection conn = new SqlConnection(connectionString))
+                {
+                    string sqlText = "select amount from transfers where transfer_id = @transferId;";
+                    SqlCommand cmd = new SqlCommand(sqlText, conn);
+                    cmd.Parameters.AddWithValue("@transferId", TestTransfer.TransferId);
+
+                    // Why is this not working?
+                    //unchangedBalance = Convert.ToDecimal(cmd.ExecuteScalar());
+
+                    SqlDataReader reader = cmd.ExecuteReader();
+                    unchangedBalance = Convert.ToDecimal(reader["amount"]);
+                }
+            }
+            catch (Exception)
+            {
+            }
 
             // Assert
-            Assert.IsTrue(updateComplete);
+            Assert.IsTrue(TestTransfer.Amount == unchangedBalance);
         }
     }
 }

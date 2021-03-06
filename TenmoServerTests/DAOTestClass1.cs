@@ -7,7 +7,7 @@ using TenmoServer.Models;
 using TenmoServer.Security;
 using TenmoServer.Security.Models;
 
-namespace TenmoServerTests.TransferSqlDAOTests
+namespace TenmoServerTests
 {
     [TestClass]
     public class DAOTestClass
@@ -49,7 +49,7 @@ namespace TenmoServerTests.TransferSqlDAOTests
             TestUser2.Salt = hash.Salt;
 
             // Define TestTrnsfer
-            TestTransfer.TransferType = "send";
+            TestTransfer.TransferType = "request";
             TestTransfer.TransferStatus = "pending";
             TestTransfer.Amount = 50.00M;
 
