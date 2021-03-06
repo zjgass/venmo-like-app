@@ -21,5 +21,13 @@ namespace TenmoClient
             return balance.Data;
         }
 
+        public List<API_User> GetAllUsers()
+        {
+            client.Authenticator = new JwtAuthenticator(UserService.GetToken());
+
+            RestRequest request = new RestRequest(API_BASE_URL + "api/user");
+            IRestResponse<List<API_User>> allUsers = client.Get<List<API_User>>(request);
+            return allUsers.Data;
+        }
     }
 }
