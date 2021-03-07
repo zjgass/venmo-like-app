@@ -116,6 +116,15 @@ namespace TenmoClient
                 {
                     int userID;
                     decimal amount;
+
+                    List<API_User> otherUsers = accountService.GetAllUsers();
+                    foreach(API_User user in otherUsers)
+                    {
+                        Console.WriteLine("ID   | Name");
+                        Console.WriteLine("----------------------------------------------------");
+                        Console.WriteLine($"| {user.UserId.ToString().PadRight(5)} | {user.Username.ToString().PadRight(25)}");
+                    }
+
                     try
                     {
                         bool validInput = false;
