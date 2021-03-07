@@ -191,6 +191,8 @@ namespace TenmoServer.Controllers
         private bool ExecuteTransfer(Transfer transfer)
         {
             bool executeSuccessful = false;
+            bool depositSuccess = false;
+            bool withdrawSuccess = false;
             decimal balance = accountDAO.GetAccount(transfer.UserFromId).Balance;
 
             if (transfer.Amount > balance)
@@ -208,18 +210,18 @@ namespace TenmoServer.Controllers
 
                     // Deposit.
                     Account toAccount = accountDAO.GetAccount(transfer.UserToId);
-                    accountDAO.Deposit(toAccount, transfer.Amount);
+                    depositSuccess = accountDAO.Deposit(toAccount, transfer.Amount);
 
                     // Withdraw.
                     Account fromAccount = accountDAO.GetAccount(transfer.UserFromId);
-                    accountDAO.Withdraw(fromAccount, transfer.Amount);
+                    withdrawSuccess = accountDAO.Withdraw(fromAccount, transfer.Amount);
 
                     // Get the sum of the final balance to do a check.
                     decimal finalSum = accountDAO.GetAccount(transfer.UserFromId).Balance
                                      + accountDAO.GetAccount(transfer.UserToId).Balance;
 
                     // Verify the sum of balances are equal.
-                    if (initSum == finalSum)
+                    if (initSum == finalSum && depositSuccess && withdrawSuccess)
                     {
                         transaction.Complete();
                         executeSuccessful = true;
@@ -233,7 +235,7 @@ namespace TenmoServer.Controllers
                     return executeSuccessful;
                 }
             }
-            catch (Exception)
+            catch (Exception e)
             {
                 throw;
             }

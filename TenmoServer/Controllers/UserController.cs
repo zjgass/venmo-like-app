@@ -37,7 +37,7 @@ namespace TenmoServer.Controllers
 
             if (users != null)
             {
-                users.Remove(currentUser);
+                bool torf = users.Remove(currentUser);
 
                 return Ok(users);
             }

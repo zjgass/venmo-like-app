@@ -20,7 +20,7 @@ namespace TenmoServer.DAO
         }
         public Account GetAccount(int userId)
         {
-            Account accountInfo = null;
+            Account accountInfo = new Account();
 
             try
             {
@@ -76,7 +76,7 @@ namespace TenmoServer.DAO
 
             try
             {
-                using (TransactionScope transaction = new TransactionScope())
+                //using (TransactionScope transaction = new TransactionScope())
                 using (SqlConnection conn = new SqlConnection(connectionString))
                 {
                     conn.Open();

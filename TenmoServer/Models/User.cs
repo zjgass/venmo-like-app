@@ -7,6 +7,21 @@
         public string PasswordHash { get; set; }
         public string Salt { get; set; }
         public string Email { get; set; }
+
+        public override bool Equals(object obj)
+        {
+            if ((obj == null) || !this.GetType().Equals(obj.GetType()))
+            {
+                return false;
+            }
+            else
+            {
+                User u = (User)obj;
+                return (UserId == u.UserId) && (Username == u.Username)
+                    && (PasswordHash == u.PasswordHash) && (Salt == u.Salt)
+                    && (Email == u.Email);
+            }
+        }
     }
 
     /// <summary>
