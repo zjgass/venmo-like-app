@@ -215,6 +215,8 @@ select scope_Identity();
 
 select * from accounts;
 
+update accounts set balance = 950
+where account_id = 1;
 
 select amount from transfers where transfer_id = (select top 1 transfer_id from transfers);
 

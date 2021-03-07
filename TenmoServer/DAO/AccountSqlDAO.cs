@@ -60,14 +60,29 @@ namespace TenmoServer.DAO
 
         public bool Deposit(Account account, decimal amountToDeposit)
         {
-            account.Balance += amountToDeposit;
-            return HelperUpdateBalance(account.Balance, account.AccountId);
+            if (amountToDeposit > 0)
+            {
+                account.Balance += amountToDeposit;
+                return HelperUpdateBalance(account.Balance, account.AccountId);
+            }
+            else
+            {
+                throw new Exception("Bad ammount.");
+            }
+            
         }
 
-        public bool Withdraw(Account account, decimal amountToWidthdraw)
+        public bool Withdraw(Account account, decimal amountToWithdraw)
         {
-            account.Balance -= amountToWidthdraw;
-            return HelperUpdateBalance(account.Balance, account.AccountId);
+            if (amountToWithdraw > 0)
+            {
+                account.Balance -= amountToWithdraw;
+                return HelperUpdateBalance(account.Balance, account.AccountId);
+            }
+            else
+            {
+                throw new Exception("Bad ammount.");
+            }
         }
 
         private bool HelperUpdateBalance(decimal amount, int accountId)
