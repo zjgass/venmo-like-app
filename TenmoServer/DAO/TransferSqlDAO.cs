@@ -78,9 +78,9 @@ namespace TenmoServer.DAO
                         "join accounts as accto on transfers.account_to = accto.account_id " +
                         "join users as userfrom on accfrom.user_id = userfrom.user_id " +
                         "join users as userto on accto.user_id = userto.user_id " +
-                        "where (userfrom.user_id = @userId " +
-                        "or userto.user_id = @userId) ";
-                    sqlText += "and status.transfer_status_desc " + (areComplete ? "!= 'pending';" : "= 'pending';");
+                        "where (userfrom.user_id = @userId ";
+                    sqlText += areComplete ? "or userto.user_id = @userId)" : ")";
+                    sqlText += " and status.transfer_status_desc " + (areComplete ? "!= 'pending';" : "= 'pending';");
                     SqlCommand cmd = new SqlCommand(sqlText, conn);
                     cmd.Parameters.AddWithValue("@userId", userId);
                     SqlDataReader reader = cmd.ExecuteReader();
