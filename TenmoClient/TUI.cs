@@ -119,10 +119,11 @@ namespace TenmoClient
 
                     List<API_User> otherUsers = accountService.GetAllUsers();
                     string id = "ID";
+                    string name = "Name";
                     string userFrom = "UserFrom";
                     string userTo = "UserTo";
                     string sentAmount = "Amount";
-                    Console.WriteLine($"{id.PadRight(5)} | {userFrom.PadRight(20)} | {userTo.PadRight(20)} | {sentAmount.PadRight(6)}");
+                    Console.WriteLine($"| {id.PadRight(5)} | {name.PadRight(20)}");
                     Console.WriteLine("----------------------------------------------------");
                     foreach (API_User user in otherUsers)
                     {
