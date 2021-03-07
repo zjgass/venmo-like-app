@@ -211,8 +211,8 @@ namespace TenmoClient
                 {
 
                     List<API_User> otherUsers = accountService.GetAllUsers();
-                    Console.WriteLine("ID       | Name");
-                    Console.WriteLine("----------------------------------------------------");
+                    Console.WriteLine($"| {id.PadRight(5)} | {name.PadRight(20)}");
+                    Console.WriteLine("------------------------------------------------------------");
                     foreach (API_User user in otherUsers)
                     {
                         Console.WriteLine($"| {user.UserId.ToString().PadRight(5)} | {user.Username.ToString().PadRight(20)}");
@@ -237,7 +237,8 @@ namespace TenmoClient
                                 {
                                     validInput = true;
                                 }
-                                else
+
+                                if (validInput == false)
                                 {
                                     Console.WriteLine("Please enter a valid User ID and Amount");
                                 }
@@ -253,6 +254,9 @@ namespace TenmoClient
 
 
                     API_Transfer requestTransfer = transferService.RequestTransfer(userID, amount);
+                    Console.WriteLine("Transfer Request:");
+                    Console.WriteLine($"| {id.PadRight(5)} | {status.PadRight(10)} | {userFrom.PadRight(20)} | {userTo.PadRight(20)} | {sentAmount.PadRight(6)}");
+                    Console.WriteLine("------------------------------------------------------------");
                     Console.WriteLine($"| {requestTransfer.TransferId.ToString().PadRight(5)} | {requestTransfer.TransferStatus.ToString().PadRight(10)} | {requestTransfer.UserFrom.ToString().PadRight(20)} | {requestTransfer.UserTo.ToString().PadRight(20)} | {requestTransfer.Amount.ToString().PadRight(6)}");
                 }
                 else if (menuSelection == logOut)
