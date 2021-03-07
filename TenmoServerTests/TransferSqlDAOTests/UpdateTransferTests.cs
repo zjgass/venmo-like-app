@@ -27,7 +27,7 @@ namespace TenmoServerTests.TransferSqlDAOTests
             };
 
             // Act
-            bool updateCompleted = dao.UpdateTransfer(updatedTransfer);
+            updatedTransfer = dao.UpdateTransfer(updatedTransfer);
 
             // Assert
             Assert.IsFalse(TestTransfer.TransferStatus.ToLower().Equals(updatedTransfer.TransferStatus.ToLower()));
@@ -49,7 +49,7 @@ namespace TenmoServerTests.TransferSqlDAOTests
             };
 
             // Act
-            bool updateComplete = dao.UpdateTransfer(updatedTransfer);
+            updatedTransfer = dao.UpdateTransfer(updatedTransfer);
             decimal unchangedBalance = 0;
 
             try
@@ -89,7 +89,7 @@ namespace TenmoServerTests.TransferSqlDAOTests
             };
 
             // Act
-            bool updateComplete = dao.UpdateTransfer(updatedTransfer);
+            updatedTransfer = dao.UpdateTransfer(updatedTransfer);
             int unchangedUser = 0;
 
             try

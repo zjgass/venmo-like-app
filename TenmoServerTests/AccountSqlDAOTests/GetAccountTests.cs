@@ -34,7 +34,7 @@ namespace TenmoServerTests.AccountSqlDAOTests
             Account account = dao.GetAccount(Int32.MaxValue);
 
             // Assert
-            Assert.IsNull(account);
+            Assert.IsTrue(account.AccountId == 0 && account.UserId == 0 && account.Balance == 0);
         }
 
         [DataTestMethod]
@@ -52,7 +52,7 @@ namespace TenmoServerTests.AccountSqlDAOTests
             Account account = dao.GetAccount(id);
 
             // Assert
-            Assert.IsNull(account);
+            Assert.IsTrue(account.AccountId == 0 && account.UserId == 0 && account.Balance == 0);
         }
     }
 }
