@@ -109,7 +109,7 @@ namespace TenmoClient
                     List<API_Transfer> pendingTransfers = transferService.GetPendingTransers();
                     foreach (API_Transfer transfer in pendingTransfers)
                     {
-                        Console.WriteLine(transfer);
+                        Console.WriteLine($"| {transfer.TransferId.ToString().PadRight(5)} | {transfer.UserFrom.ToString().PadRight(25)} | {transfer.UserTo.ToString().PadRight(25)} | {transfer.Amount.ToString().PadRight(25)}");
                     }
                 }
                 else if (menuSelection == send)
@@ -118,10 +118,10 @@ namespace TenmoClient
                     decimal amount;
 
                     List<API_User> otherUsers = accountService.GetAllUsers();
-                    foreach(API_User user in otherUsers)
+                    Console.WriteLine("ID   | Name");
+                    Console.WriteLine("----------------------------------------------------");
+                    foreach (API_User user in otherUsers)
                     {
-                        Console.WriteLine("ID   | Name");
-                        Console.WriteLine("----------------------------------------------------");
                         Console.WriteLine($"| {user.UserId.ToString().PadRight(5)} | {user.Username.ToString().PadRight(25)}");
                     }
 
@@ -155,7 +155,7 @@ namespace TenmoClient
                     
                  
                     API_Transfer sendTransfer = transferService.SendTEbucks(userID,amount);
-                    Console.WriteLine(sendTransfer);
+                    Console.WriteLine($"| {sendTransfer.TransferId.ToString().PadRight(5)} | {sendTransfer.UserFrom.ToString().PadRight(25)} | {sendTransfer.UserTo.ToString().PadRight(25)} | {sendTransfer.Amount.ToString().PadRight(25)}");
                 }
                 else if (menuSelection == request)
                 {
@@ -191,7 +191,7 @@ namespace TenmoClient
 
 
                     API_Transfer requestTransfer = transferService.RequestTransfer(userID, amount);
-                    Console.WriteLine(requestTransfer);
+                    Console.WriteLine($"| {requestTransfer.TransferId.ToString().PadRight(5)} | {requestTransfer.UserFrom.ToString().PadRight(25)} | {requestTransfer.UserTo.ToString().PadRight(25)} | {requestTransfer.Amount.ToString().PadRight(25)}");
                 }
                 else if (menuSelection == logOut)
                 {
