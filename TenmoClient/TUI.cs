@@ -136,14 +136,18 @@ namespace TenmoClient
                             string _amount = Console.ReadLine();
                             userID = int.Parse(_userID);
                             amount = decimal.Parse(_amount);
-                            if(userID != 0 && amount != 0)
+                            foreach(API_User user in otherUsers)
                             {
-                                validInput = true;
+                                if (user.UserId == userID && amount > 0 && user.UserId != UserService.GetUserId())
+                                {
+                                    validInput = true;
+                                }
+                                else
+                                {
+                                    Console.WriteLine("Please enter a valid User ID and Amount");
+                                }
                             }
-                            else
-                            {
-                                Console.WriteLine("Please enter a valid User ID and Amount");
-                            }
+                            
                         } while (!validInput);
                         
                     }
@@ -159,6 +163,15 @@ namespace TenmoClient
                 }
                 else if (menuSelection == request)
                 {
+
+                    List<API_User> otherUsers = accountService.GetAllUsers();
+                    Console.WriteLine("ID       | Name");
+                    Console.WriteLine("----------------------------------------------------");
+                    foreach (API_User user in otherUsers)
+                    {
+                        Console.WriteLine($"| {user.UserId.ToString().PadRight(5)} | {user.Username.ToString().PadRight(20)}");
+                    }
+
                     int userID;
                     decimal amount;
                     try
@@ -172,13 +185,16 @@ namespace TenmoClient
                             string _amount = Console.ReadLine();
                             userID = int.Parse(_userID);
                             amount = decimal.Parse(_amount);
-                            if (userID != 0 && amount != 0)
+                            foreach (API_User user in otherUsers)
                             {
-                                validInput = true;
-                            }
-                            else
-                            {
-                                Console.WriteLine("Please enter a valid User ID and Amount");
+                                if (user.UserId == userID && amount > 0 && user.UserId != UserService.GetUserId())
+                                {
+                                    validInput = true;
+                                }
+                                else
+                                {
+                                    Console.WriteLine("Please enter a valid User ID and Amount");
+                                }
                             }
                         } while (!validInput);
 
