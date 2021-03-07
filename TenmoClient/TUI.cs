@@ -101,7 +101,7 @@ namespace TenmoClient
                     List<API_Transfer> pastTransfers = transferService.GetPastTransfers();
                     foreach(API_Transfer transfer in pastTransfers)
                     {
-                        Console.WriteLine(transfer);
+                        Console.WriteLine($"| {transfer.TransferId.ToString().PadRight(5)} | {transfer.TransferStatus.ToString().PadRight(10)} | {transfer.UserFrom.ToString().PadRight(20)} | {transfer.UserTo.ToString().PadRight(20)} | {transfer.Amount.ToString().PadRight(6)}");
                     }
                 }
                 else if (menuSelection == pendingRequests)
@@ -109,7 +109,7 @@ namespace TenmoClient
                     List<API_Transfer> pendingTransfers = transferService.GetPendingTransers();
                     foreach (API_Transfer transfer in pendingTransfers)
                     {
-                        Console.WriteLine($"| {transfer.TransferId.ToString().PadRight(5)} | {transfer.UserFrom.ToString().PadRight(25)} | {transfer.UserTo.ToString().PadRight(25)} | {transfer.Amount.ToString().PadRight(25)}");
+                        Console.WriteLine($"| {transfer.TransferId.ToString().PadRight(5)} | {transfer.TransferStatus.ToString().PadRight(10)} | {transfer.UserFrom.ToString().PadRight(20)} | {transfer.UserTo.ToString().PadRight(20)} | {transfer.Amount.ToString().PadRight(6)}");
                     }
                 }
                 else if (menuSelection == send)
@@ -118,11 +118,11 @@ namespace TenmoClient
                     decimal amount;
 
                     List<API_User> otherUsers = accountService.GetAllUsers();
-                    Console.WriteLine("ID   | Name");
+                    Console.WriteLine("ID       | Name");
                     Console.WriteLine("----------------------------------------------------");
                     foreach (API_User user in otherUsers)
                     {
-                        Console.WriteLine($"| {user.UserId.ToString().PadRight(5)} | {user.Username.ToString().PadRight(25)}");
+                        Console.WriteLine($"| {user.UserId.ToString().PadRight(5)} | {user.Username.ToString().PadRight(20)}");
                     }
 
                     try
@@ -155,7 +155,7 @@ namespace TenmoClient
                     
                  
                     API_Transfer sendTransfer = transferService.SendTEbucks(userID,amount);
-                    Console.WriteLine($"| {sendTransfer.TransferId.ToString().PadRight(5)} | {sendTransfer.UserFrom.ToString().PadRight(25)} | {sendTransfer.UserTo.ToString().PadRight(25)} | {sendTransfer.Amount.ToString().PadRight(25)}");
+                    Console.WriteLine($"| {sendTransfer.TransferId.ToString().PadRight(5)} | {sendTransfer.UserFrom.ToString().PadRight(20)} | {sendTransfer.UserTo.ToString().PadRight(20)} | {sendTransfer.Amount.ToString().PadRight(6)}");
                 }
                 else if (menuSelection == request)
                 {
@@ -191,7 +191,7 @@ namespace TenmoClient
 
 
                     API_Transfer requestTransfer = transferService.RequestTransfer(userID, amount);
-                    Console.WriteLine($"| {requestTransfer.TransferId.ToString().PadRight(5)} | {requestTransfer.UserFrom.ToString().PadRight(25)} | {requestTransfer.UserTo.ToString().PadRight(25)} | {requestTransfer.Amount.ToString().PadRight(25)}");
+                    Console.WriteLine($"| {requestTransfer.TransferId.ToString().PadRight(5)} | {requestTransfer.TransferStatus.ToString().PadRight(10)} | {requestTransfer.UserFrom.ToString().PadRight(20)} | {requestTransfer.UserTo.ToString().PadRight(20)} | {requestTransfer.Amount.ToString().PadRight(6)}");
                 }
                 else if (menuSelection == logOut)
                 {
