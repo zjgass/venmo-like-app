@@ -76,7 +76,7 @@ namespace TenmoServerTests
 
                     // Create new accounts for the Test Users.
                     sqlText = "insert into accounts (user_id, balance) " +
-                        "values ( (select user_id from users where username = @username), @balance);";
+                        "values ((select user_id from users where username = @username), @balance);";
                     cmd = new SqlCommand(sqlText, conn);
                     cmd.Parameters.AddWithValue("@username", TestUser1.Username);
                     cmd.Parameters.AddWithValue("@balance", initialBalance);

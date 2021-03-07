@@ -55,14 +55,14 @@ namespace TenmoServer.DAO
                 {
                     conn.Open();
 
-                    SqlCommand cmd = new SqlCommand("SELECT user_id, username, FROM users", conn); // used to include passwordhash, salt
+                    SqlCommand cmd = new SqlCommand("SELECT user_id, username FROM users", conn);
                     SqlDataReader reader = cmd.ExecuteReader();
 
                     if (reader.HasRows)
                     {
                         while (reader.Read())
                         {
-                            User u = GetUserFromReader(reader);
+                            User u = GetUsersFromReader(reader);
                             returnUsers.Add(u);
                         }
 
@@ -119,6 +119,19 @@ namespace TenmoServer.DAO
                 Username = Convert.ToString(reader["username"]),
                 PasswordHash = Convert.ToString(reader["password_hash"]),
                 Salt = Convert.ToString(reader["salt"]),
+            };
+
+            return u;
+        }
+
+        private User GetUsersFromReader(SqlDataReader reader)
+        {
+            User u = new User()
+            {
+                UserId = Convert.ToInt32(reader["user_id"]),
+                Username = Convert.ToString(reader["username"]),
+                //PasswordHash = Convert.ToString(reader["password_hash"]),
+                //Salt = Convert.ToString(reader["salt"]),
             };
 
             return u;

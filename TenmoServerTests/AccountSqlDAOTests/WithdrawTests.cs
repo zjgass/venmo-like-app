@@ -9,7 +9,7 @@ using System.Data.SqlClient;
 namespace TenmoServerTests.AccountSqlDAOTests
 {
     [TestClass]
-    public class DepositTests : DAOTestClass
+    public class WithdrawTests : DAOTestClass
     {
         [TestMethod]
         public void HappyPath()
@@ -42,7 +42,7 @@ namespace TenmoServerTests.AccountSqlDAOTests
             }
 
             // Act and Assert
-            Assert.IsTrue(dao.Deposit(account, 50.00M));
+            Assert.IsTrue(dao.Withdraw(account, 50.00M));
         }
     }
 }

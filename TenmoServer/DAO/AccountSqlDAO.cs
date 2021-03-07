@@ -86,6 +86,8 @@ namespace TenmoServer.DAO
                     SqlCommand cmd = new SqlCommand(sqlText, conn);
                     cmd.Parameters.AddWithValue("@amount", amount);
                     cmd.Parameters.AddWithValue("@accountId", accountId);
+
+                    successful = true;
                 }
             }
             catch (Exception e)
