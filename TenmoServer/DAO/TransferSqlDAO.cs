@@ -18,7 +18,7 @@ namespace TenmoServer.DAO
             connectionString = dbConnectionString;
         }
 
-        public bool UpdateTransfer(Transfer transfer)
+        public Transfer UpdateTransfer(Transfer transfer)
         {
             bool updateComplete = false;
             try
@@ -48,7 +48,14 @@ namespace TenmoServer.DAO
                 throw e;
             }
 
-            return updateComplete;
+            if (updateComplete)
+            {
+                return transfer;
+            }
+            else
+            {
+                throw new Exception("Update was not completed.");
+            }
         }
 
         public List<Transfer> GetAllTransfers(int userId, bool areComplete)
@@ -159,7 +166,6 @@ namespace TenmoServer.DAO
                     cmd.Parameters.AddWithValue("@amount", transfer.Amount);
 
                     transfer.TransferId = Convert.ToInt32(cmd.ExecuteScalar());
-                    transfer = GetTransfer(transfer.UserFromId, transfer.TransferId);
                 }
             }
             catch (Exception e)

@@ -9,7 +9,7 @@ namespace TenmoServer.DAO
     public interface ITransferDAO
     {
         Transfer NewTransfer(Transfer transfer);
-        bool UpdateTransfer(Transfer transfer);
+        Transfer UpdateTransfer(Transfer transfer);
         List<Transfer> GetAllTransfers(int userId, bool areComplete);
         Transfer GetTransfer(int userId, int transferId);
     }

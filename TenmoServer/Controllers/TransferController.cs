@@ -34,7 +34,7 @@ namespace TenmoServer.Controllers
             }
             catch (Exception)
             {
-                return BadRequest();
+                return BadRequest("Invalid user id.");
             }
 
             List<Transfer> transfers = transferDao.GetAllTransfers(userId, true);
@@ -61,9 +61,13 @@ namespace TenmoServer.Controllers
 
             List<Transfer> transfers = transferDao.GetAllTransfers(userId, false);
 
-            if (transfers != null)
+            if (transfers != null && transfers.Count > 0)
             {
                 return Ok(transfers);
+            }
+            else if (transfers.Count == 0)
+            {
+                return Ok("No pending transfers.");
             }
 
             return BadRequest();
@@ -104,7 +108,7 @@ namespace TenmoServer.Controllers
                 return BadRequest();
             }
 
-            if (userId == transfer.UserFromId)
+            if (userId == transfer.UserFromId && userId != transfer.UserToId)
             {
                 transfer.TransferType = "Send";
                 transfer.TransferStatus = "Approved";
@@ -156,7 +160,6 @@ namespace TenmoServer.Controllers
         public ActionResult<Transfer> UpdateTransfer(Transfer transfer)
         {
             bool success = false;
-            bool updated = false;
             int userId = 0;
             try
             {
@@ -164,25 +167,36 @@ namespace TenmoServer.Controllers
             }
             catch (Exception)
             {
-                return BadRequest();
+                return BadRequest("Invalid user id.");
             }
 
-            if (transfer.TransferStatus != "pending" && transfer.UserFromId == userId)
+            if (transfer.TransferStatus.ToLower().Trim() != "pending" && transfer.UserFromId == userId)
             {
-                if (transfer.TransferStatus.ToLower().Equals("approved"))
+                if (transfer.TransferStatus.ToLower().Trim().Equals("approved"))
                 {
                     success = ExecuteTransfer(transfer);
                     if (success)
                     {
-                        updated = transferDao.UpdateTransfer(transfer);
+                        transfer = transferDao.UpdateTransfer(transfer);
+                        transfer = transferDao.GetTransfer(transfer.UserFromId, transfer.TransferId);
                     }
                     
                 }
+                else if (transfer.TransferStatus.ToLower().Trim().Equals("reject"))
+                {
+                    success = true;
+                    transfer = transferDao.UpdateTransfer(transfer);
+                    transfer = transferDao.GetTransfer(transfer.UserFromId, transfer.TransferId);
+                }
 
-                if (updated)
+                if (success)
                 {
                     return CreatedAtRoute("GetTransfer", new { id = transfer.TransferId }, transfer);
                 }
+            }
+            else
+            {
+                return BadRequest("Invalid transfer.");
             }
 
             return BadRequest();
@@ -244,6 +258,7 @@ namespace TenmoServer.Controllers
         private Transfer CreateTransfer(Transfer transfer)
         {
             transfer = transferDao.NewTransfer(transfer);
+            transfer = transferDao.GetTransfer(transfer.UserFromId, transfer.TransferId);
 
             return transfer;
         }
