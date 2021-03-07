@@ -1,0 +1,424 @@
+{
+	"info": {
+		"_postman_id": "1d486876-9d79-4acc-8396-a26392170ca9",
+		"name": "TenmoServer",
+		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+	},
+	"item": [
+		{
+			"name": "Account",
+			"item": [
+				{
+					"name": "https://localhost:44315/api/account",
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiIxIiwibmFtZSI6ImEiLCJuYmYiOjE2MTUwODcyODksImV4cCI6MTYxNTY5MjA4OSwiaWF0IjoxNjE1MDg3Mjg5fQ.EBgDz86qXGvEAFTCiVHQxM5FAVQ2juqV4Y2mojPgtwY",
+									"type": "string"
+								}
+							]
+						},
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "https://localhost:44315/api/account",
+							"protocol": "https",
+							"host": [
+								"localhost"
+							],
+							"port": "44315",
+							"path": [
+								"api",
+								"account"
+							]
+						}
+					},
+					"response": []
+				}
+			]
+		},
+		{
+			"name": "User",
+			"item": [
+				{
+					"name": "https://localhost:44315/api/user",
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiIxIiwibmFtZSI6ImEiLCJuYmYiOjE2MTUwODcyODksImV4cCI6MTYxNTY5MjA4OSwiaWF0IjoxNjE1MDg3Mjg5fQ.EBgDz86qXGvEAFTCiVHQxM5FAVQ2juqV4Y2mojPgtwY",
+									"type": "string"
+								}
+							]
+						},
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "https://localhost:44315/api/user",
+							"protocol": "https",
+							"host": [
+								"localhost"
+							],
+							"port": "44315",
+							"path": [
+								"api",
+								"user"
+							]
+						}
+					},
+					"response": []
+				}
+			]
+		},
+		{
+			"name": "Transfer",
+			"item": [
+				{
+					"name": "https://localhost:44315/api/transfer",
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiIxIiwibmFtZSI6ImEiLCJuYmYiOjE2MTUwODcyODksImV4cCI6MTYxNTY5MjA4OSwiaWF0IjoxNjE1MDg3Mjg5fQ.EBgDz86qXGvEAFTCiVHQxM5FAVQ2juqV4Y2mojPgtwY",
+									"type": "string"
+								}
+							]
+						},
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n    \"transferType\" : \"Send\",\r\n    \"transferStatus\" : \"Approved\",\r\n    \"userToId\" : \"2\",\r\n    \"userFromId\" : \"1\",\r\n    \"amount\" : \"50.00\"\r\n }",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "https://localhost:44315/api/transfer",
+							"protocol": "https",
+							"host": [
+								"localhost"
+							],
+							"port": "44315",
+							"path": [
+								"api",
+								"transfer"
+							]
+						},
+						"description": "Make a new send transfer."
+					},
+					"response": []
+				},
+				{
+					"name": "https://localhost:44315/api/transfer/1",
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiIxIiwibmFtZSI6ImEiLCJuYmYiOjE2MTUwODcyODksImV4cCI6MTYxNTY5MjA4OSwiaWF0IjoxNjE1MDg3Mjg5fQ.EBgDz86qXGvEAFTCiVHQxM5FAVQ2juqV4Y2mojPgtwY",
+									"type": "string"
+								}
+							]
+						},
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "https://localhost:44315/api/transfer",
+							"protocol": "https",
+							"host": [
+								"localhost"
+							],
+							"port": "44315",
+							"path": [
+								"api",
+								"transfer"
+							]
+						},
+						"description": "Get specific transfer."
+					},
+					"response": []
+				},
+				{
+					"name": "https://localhost:44315/api/transfer/request",
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiIxIiwibmFtZSI6ImEiLCJuYmYiOjE2MTUwODcyODksImV4cCI6MTYxNTY5MjA4OSwiaWF0IjoxNjE1MDg3Mjg5fQ.EBgDz86qXGvEAFTCiVHQxM5FAVQ2juqV4Y2mojPgtwY",
+									"type": "string"
+								}
+							]
+						},
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n    \"transferType\" : \"Request\",\r\n    \"transferStatus\" : \"Pending\",\r\n    \"userToId\" : \"1\",\r\n    \"userFromId\" : \"2\",\r\n    \"amount\" : \"50.00\"\r\n }",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "https://localhost:44315/api/transfer/request",
+							"protocol": "https",
+							"host": [
+								"localhost"
+							],
+							"port": "44315",
+							"path": [
+								"api",
+								"transfer",
+								"request"
+							]
+						},
+						"description": "Request TE bucks."
+					},
+					"response": []
+				},
+				{
+					"name": "https://localhost:44315/api/transfer/pending",
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiIyIiwibmFtZSI6ImIiLCJuYmYiOjE2MTUwODgwMTgsImV4cCI6MTYxNTY5MjgxOCwiaWF0IjoxNjE1MDg4MDE4fQ.o2L6mchvJbAPNbQFKNDiiu0vqxnTVcYAucfRT4OlOaE",
+									"type": "string"
+								}
+							]
+						},
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "https://localhost:44315/api/transfer/pending",
+							"protocol": "https",
+							"host": [
+								"localhost"
+							],
+							"port": "44315",
+							"path": [
+								"api",
+								"transfer",
+								"pending"
+							]
+						},
+						"description": "View pending transfers."
+					},
+					"response": []
+				},
+				{
+					"name": "https://localhost:44315/api/transfer/2",
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiIyIiwibmFtZSI6ImIiLCJuYmYiOjE2MTUwODgwMTgsImV4cCI6MTYxNTY5MjgxOCwiaWF0IjoxNjE1MDg4MDE4fQ.o2L6mchvJbAPNbQFKNDiiu0vqxnTVcYAucfRT4OlOaE",
+									"type": "string"
+								}
+							]
+						},
+						"method": "PUT",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n        \"transferId\": 2,\r\n        \"transferType\": \"Request\",\r\n        \"transferStatus\": \"Approved\",\r\n        \"userFrom\": \"b\",\r\n        \"userFromId\": 2,\r\n        \"userTo\": \"a\",\r\n        \"userToId\": 1,\r\n        \"amount\": 50.00\r\n    }",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "https://localhost:44315/api/transfer/2",
+							"protocol": "https",
+							"host": [
+								"localhost"
+							],
+							"port": "44315",
+							"path": [
+								"api",
+								"transfer",
+								"2"
+							]
+						},
+						"description": "Approve update."
+					},
+					"response": []
+				},
+				{
+					"name": "https://localhost:44315/api/transfer/3",
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiIyIiwibmFtZSI6ImIiLCJuYmYiOjE2MTUwODgwMTgsImV4cCI6MTYxNTY5MjgxOCwiaWF0IjoxNjE1MDg4MDE4fQ.o2L6mchvJbAPNbQFKNDiiu0vqxnTVcYAucfRT4OlOaE",
+									"type": "string"
+								}
+							]
+						},
+						"method": "PUT",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n        \"transferId\": 3,\r\n        \"transferType\": \"Request\",\r\n        \"transferStatus\": \"Rejected\",\r\n        \"userFrom\": \"b\",\r\n        \"userFromId\": 2,\r\n        \"userTo\": \"a\",\r\n        \"userToId\": 1,\r\n        \"amount\": 50.00\r\n    }",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "https://localhost:44315/api/transfer/3",
+							"protocol": "https",
+							"host": [
+								"localhost"
+							],
+							"port": "44315",
+							"path": [
+								"api",
+								"transfer",
+								"3"
+							]
+						},
+						"description": "Rejected update."
+					},
+					"response": []
+				},
+				{
+					"name": "https://localhost:44315/api/transfer/request",
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiIzIiwibmFtZSI6ImMiLCJuYmYiOjE2MTUwODg1MjEsImV4cCI6MTYxNTY5MzMyMSwiaWF0IjoxNjE1MDg4NTIxfQ.Ywv-xSOX_7vjhra-USZzMNkv3nPMLKi_Zsnljl8fQrI",
+									"type": "string"
+								}
+							]
+						},
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n    \"transferType\" : \"Request\",\r\n    \"transferStatus\" : \"Pending\",\r\n    \"userToId\" : \"3\",\r\n    \"userFromId\" : \"2\",\r\n    \"amount\" : \"5000.00\"\r\n }",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "https://localhost:44315/api/transfer/request",
+							"protocol": "https",
+							"host": [
+								"localhost"
+							],
+							"port": "44315",
+							"path": [
+								"api",
+								"transfer",
+								"request"
+							]
+						},
+						"description": "Asking for too much."
+					},
+					"response": []
+				},
+				{
+					"name": "https://localhost:44315/api/transfer/4",
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiIyIiwibmFtZSI6ImIiLCJuYmYiOjE2MTUwODgwMTgsImV4cCI6MTYxNTY5MjgxOCwiaWF0IjoxNjE1MDg4MDE4fQ.o2L6mchvJbAPNbQFKNDiiu0vqxnTVcYAucfRT4OlOaE",
+									"type": "string"
+								}
+							]
+						},
+						"method": "PUT",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n        \"transferId\": 4,\r\n        \"transferType\": \"Request\",\r\n        \"transferStatus\": \"Approved\",\r\n        \"userFrom\": \"b\",\r\n        \"userFromId\": 2,\r\n        \"userTo\": \"c\",\r\n        \"userToId\": 3,\r\n        \"amount\": 5000.00\r\n    }",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "https://localhost:44315/api/transfer/4",
+							"protocol": "https",
+							"host": [
+								"localhost"
+							],
+							"port": "44315",
+							"path": [
+								"api",
+								"transfer",
+								"4"
+							]
+						},
+						"description": "Insufficient funds."
+					},
+					"response": []
+				}
+			]
+		},
+		{
+			"name": "https://localhost:44315/login",
+			"protocolProfileBehavior": {
+				"strictSSL": false
+			},
+			"request": {
+				"method": "POST",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "{\r\n    \"username\" : \"a\",\r\n    \"password\" : \"a\"\r\n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "https://localhost:44315/login",
+					"protocol": "https",
+					"host": [
+						"localhost"
+					],
+					"port": "44315",
+					"path": [
+						"login"
+					]
+				},
+				"description": "Login to get jwt."
+			},
+			"response": []
+		}
+	]
+}
