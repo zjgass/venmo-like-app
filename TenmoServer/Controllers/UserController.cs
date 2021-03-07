@@ -27,7 +27,10 @@ namespace TenmoServer.Controllers
             User currentUser = new User()
             {
                 UserId = Convert.ToInt32(User.FindFirst("sub").Value),
-                Username = User.FindFirst("username").Value
+                Username = User.FindFirst("name").Value,
+                PasswordHash = null,
+                Salt = null,
+                Email = null
             };
 
             List<User> users = userDao.GetUsers();

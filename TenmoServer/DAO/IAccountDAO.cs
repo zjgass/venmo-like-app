@@ -9,8 +9,8 @@ namespace TenmoServer.DAO
     public interface IAccountDAO
     {
         Account GetAccount(int userId);
-        Account Deposit(Account account, decimal amountToDeposit);
-        Account Withdraw(Account account, decimal amountToWidthdraw);
+        bool Deposit(Account account, decimal amountToDeposit);
+        bool Withdraw(Account account, decimal amountToWidthdraw);
 
     }
 }

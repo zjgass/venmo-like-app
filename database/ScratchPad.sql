@@ -214,3 +214,8 @@ or user_id = 521;
 select scope_Identity();
 
 select * from accounts;
+
+
+select amount from transfers where transfer_id = (select top 1 transfer_id from transfers);
+
+select account_id from accounts where user_id = 521;

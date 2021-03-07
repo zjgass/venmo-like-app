@@ -50,26 +50,24 @@ namespace TenmoServer.DAO
         {
             Account newAccount = new Account()
             {
-                User_Id = Convert.ToInt32(reader["user_id"]),
-                Account_Id = Convert.ToInt32(reader["account_id"]),
+                UserId = Convert.ToInt32(reader["user_id"]),
+                AccountId = Convert.ToInt32(reader["account_id"]),
                 Balance = Convert.ToDecimal(reader["balance"])
             };
 
             return newAccount;
         }
 
-        public Account Deposit(Account account, decimal amountToDeposit)
+        public bool Deposit(Account account, decimal amountToDeposit)
         {
             account.Balance += amountToDeposit;
-            HelperUpdateBalance(account.Balance, account.Account_Id);
-            return account;
+            return HelperUpdateBalance(account.Balance, account.AccountId);
         }
 
-        public Account Withdraw(Account account, decimal amountToWidthdraw)
+        public bool Withdraw(Account account, decimal amountToWidthdraw)
         {
             account.Balance -= amountToWidthdraw;
-            HelperUpdateBalance(account.Balance, account.Account_Id);
-            return account;
+            return HelperUpdateBalance(account.Balance, account.AccountId);
         }
 
         private bool HelperUpdateBalance(decimal amount, int accountId)
@@ -88,6 +86,8 @@ namespace TenmoServer.DAO
                     SqlCommand cmd = new SqlCommand(sqlText, conn);
                     cmd.Parameters.AddWithValue("@amount", amount);
                     cmd.Parameters.AddWithValue("@accountId", accountId);
+
+                    successful = true;
                 }
             }
             catch (Exception e)

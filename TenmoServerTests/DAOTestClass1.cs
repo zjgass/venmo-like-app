@@ -7,7 +7,7 @@ using TenmoServer.Models;
 using TenmoServer.Security;
 using TenmoServer.Security.Models;
 
-namespace TenmoServerTests.TransferSqlDAOTests
+namespace TenmoServerTests
 {
     [TestClass]
     public class DAOTestClass
@@ -49,7 +49,7 @@ namespace TenmoServerTests.TransferSqlDAOTests
             TestUser2.Salt = hash.Salt;
 
             // Define TestTrnsfer
-            TestTransfer.TransferType = "send";
+            TestTransfer.TransferType = "request";
             TestTransfer.TransferStatus = "pending";
             TestTransfer.Amount = 50.00M;
 
@@ -76,7 +76,7 @@ namespace TenmoServerTests.TransferSqlDAOTests
 
                     // Create new accounts for the Test Users.
                     sqlText = "insert into accounts (user_id, balance) " +
-                        "values ( (select user_id from users where username = @username), @balance);";
+                        "values ((select user_id from users where username = @username), @balance);";
                     cmd = new SqlCommand(sqlText, conn);
                     cmd.Parameters.AddWithValue("@username", TestUser1.Username);
                     cmd.Parameters.AddWithValue("@balance", initialBalance);
