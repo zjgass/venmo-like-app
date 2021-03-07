@@ -142,11 +142,11 @@ namespace TenmoClient
                                     string option = Console.ReadLine();
                                     if(option.Trim() == "1")
                                     {
-                                        option = "Approved";
+                                        option = "approved";
                                         updatedTransfer = transferService.UpdateTransfer(transfers, option);
                                     } else if (option.Trim() == "2")
                                     {
-                                        option = "Reject";
+                                        option = "rejected";
                                         updatedTransfer = transferService.UpdateTransfer(transfers, option);
                                     } else if (option.Trim() == "0")
                                     {
