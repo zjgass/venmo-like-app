@@ -135,7 +135,24 @@ namespace TenmoClient
                             {
                                 if (transfers.TransferId == transferNum)
                                 {
-                                    updatedTransfer = transferService.UpdateTransfer(transferNum);
+                                    Console.WriteLine("1: Approve\n"+
+                                                      "2: Reject\n" +
+                                                      "0: Leave as Pending");
+                                    Console.WriteLine("Please select an option: ");
+                                    string option = Console.ReadLine();
+                                    if(option.Trim() == "1")
+                                    {
+                                        option = "Approved";
+                                        updatedTransfer = transferService.UpdateTransfer(transfers, option);
+                                    } else if (option.Trim() == "2")
+                                    {
+                                        option = "Reject";
+                                        updatedTransfer = transferService.UpdateTransfer(transfers, option);
+                                    } else if (option.Trim() == "0")
+                                    {
+                                        option = "end";
+                                    }
+                                    
                                 }
                                 else if (transferNum == 0)
                                 {
