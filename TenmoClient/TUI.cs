@@ -122,30 +122,43 @@ namespace TenmoClient
                         Console.WriteLine($"| {transfer.TransferId.ToString().PadRight(5)} | {transfer.TransferStatus.ToString().PadRight(10)} | {transfer.UserFrom.ToString().PadRight(20)} | {transfer.UserTo.ToString().PadRight(20)} | {transfer.Amount.ToString().PadRight(6)}");
                     }
 
-                    Console.Write("Would you like to Approve/Reject a request?(0 to go back to the menu): ");
-                    string transferString = Console.ReadLine();
+                    bool continueWorking = true;
                     API_Transfer updatedTransfer = new API_Transfer();
                     try
                     {
-                        int transferNum = int.Parse(transferString);
-                        foreach (API_Transfer transfers in pendingTransfers)
+                        do 
                         {
-                            if(transfers.TransferId == transferNum)
+                            Console.Write("Would you like to Approve/Reject a request?(0 to go back to the menu): ");
+                            string transferString = Console.ReadLine();
+                            int transferNum = int.Parse(transferString);
+                            foreach (API_Transfer transfers in pendingTransfers)
                             {
-                                updatedTransfer = transferService.UpdateTransfer(transferNum);
+                                if (transfers.TransferId == transferNum)
+                                {
+                                    updatedTransfer = transferService.UpdateTransfer(transferNum);
+                                }
+                                else if (transferNum == 0)
+                                {
+                                    continueWorking = false;
+                                }
+                                else
+                                {
+                                    updatedTransfer = null;
+                                }
                             }
-                        }
-                        if(updatedTransfer != null)
-                        {
-                            Console.WriteLine("Updated Transfer Request:");
-                            Console.WriteLine($"| {id.PadRight(5)} | {status.PadRight(10)} | {userFrom.PadRight(20)} | {userTo.PadRight(20)} | {sentAmount.PadRight(6)}");
-                            Console.WriteLine("------------------------------------------------------------");
-                            Console.WriteLine($"| {updatedTransfer.TransferId.ToString().PadRight(5)} | {updatedTransfer.TransferStatus.ToString().PadRight(10)} | {updatedTransfer.UserFrom.ToString().PadRight(20)} | {updatedTransfer.UserTo.ToString().PadRight(20)} | {updatedTransfer.Amount.ToString().PadRight(6)}");
-                        }
-                        else
-                        {
-                            Console.WriteLine("Sorry, We couldn't find that account, Please try again");
-                        }
+                            if (updatedTransfer != null)
+                            {
+                                Console.WriteLine("Updated Transfer Request:");
+                                Console.WriteLine($"| {id.PadRight(5)} | {status.PadRight(10)} | {userFrom.PadRight(20)} | {userTo.PadRight(20)} | {sentAmount.PadRight(6)}");
+                                Console.WriteLine("------------------------------------------------------------");
+                                Console.WriteLine($"| {updatedTransfer.TransferId.ToString().PadRight(5)} | {updatedTransfer.TransferStatus.ToString().PadRight(10)} | {updatedTransfer.UserFrom.ToString().PadRight(20)} | {updatedTransfer.UserTo.ToString().PadRight(20)} | {updatedTransfer.Amount.ToString().PadRight(6)}");
+                            }
+                            else
+                            {
+                                Console.WriteLine("Sorry, We couldn't find that account, Please try again");
+                            }
+                        } while (continueWorking);
+                        
                         
                     }
                     catch (Exception)
