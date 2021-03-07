@@ -71,6 +71,12 @@ namespace TenmoClient
             const int send = 4;
             const int request = 5;
             const int logOut = 6;
+            const string id = "ID";
+            const string name = "Name";
+            const string userFrom = "UserFrom";
+            const string userTo = "UserTo";
+            const string sentAmount = "Amount";
+            const string status = "Status";
 
             int menuSelection = -1;
             while (menuSelection != 0)
@@ -99,7 +105,9 @@ namespace TenmoClient
                 else if (menuSelection == pastTransactions)
                 {
                     List<API_Transfer> pastTransfers = transferService.GetPastTransfers();
-                    foreach(API_Transfer transfer in pastTransfers)
+                    Console.WriteLine($"| {id.PadRight(5)} | {status.PadRight(10)} | {userFrom.PadRight(20)} | {userTo.PadRight(20)} | {sentAmount.PadRight(6)}");
+                    Console.WriteLine("------------------------------------------------------------");
+                    foreach (API_Transfer transfer in pastTransfers)
                     {
                         Console.WriteLine($"| {transfer.TransferId.ToString().PadRight(5)} | {transfer.TransferStatus.ToString().PadRight(10)} | {transfer.UserFrom.ToString().PadRight(20)} | {transfer.UserTo.ToString().PadRight(20)} | {transfer.Amount.ToString().PadRight(6)}");
                     }
@@ -107,9 +115,43 @@ namespace TenmoClient
                 else if (menuSelection == pendingRequests)
                 {
                     List<API_Transfer> pendingTransfers = transferService.GetPendingTransers();
+                    Console.WriteLine($"| {id.PadRight(5)} | {status.PadRight(10)} | {userFrom.PadRight(20)} | {userTo.PadRight(20)} | {sentAmount.PadRight(6)}");
+                    Console.WriteLine("------------------------------------------------------------");
                     foreach (API_Transfer transfer in pendingTransfers)
                     {
                         Console.WriteLine($"| {transfer.TransferId.ToString().PadRight(5)} | {transfer.TransferStatus.ToString().PadRight(10)} | {transfer.UserFrom.ToString().PadRight(20)} | {transfer.UserTo.ToString().PadRight(20)} | {transfer.Amount.ToString().PadRight(6)}");
+                    }
+
+                    Console.Write("Would you like to Approve/Reject a request?(0 to go back to the menu): ");
+                    string transferString = Console.ReadLine();
+                    API_Transfer updatedTransfer = new API_Transfer();
+                    try
+                    {
+                        int transferNum = int.Parse(transferString);
+                        foreach (API_Transfer transfers in pendingTransfers)
+                        {
+                            if(transfers.TransferId == transferNum)
+                            {
+                                updatedTransfer = transferService.UpdateTransfer(transferNum);
+                            }
+                        }
+                        if(updatedTransfer != null)
+                        {
+                            Console.WriteLine("Updated Transfer Request:");
+                            Console.WriteLine($"| {id.PadRight(5)} | {status.PadRight(10)} | {userFrom.PadRight(20)} | {userTo.PadRight(20)} | {sentAmount.PadRight(6)}");
+                            Console.WriteLine("------------------------------------------------------------");
+                            Console.WriteLine($"| {updatedTransfer.TransferId.ToString().PadRight(5)} | {updatedTransfer.TransferStatus.ToString().PadRight(10)} | {updatedTransfer.UserFrom.ToString().PadRight(20)} | {updatedTransfer.UserTo.ToString().PadRight(20)} | {updatedTransfer.Amount.ToString().PadRight(6)}");
+                        }
+                        else
+                        {
+                            Console.WriteLine("Sorry, We couldn't find that account, Please try again");
+                        }
+                        
+                    }
+                    catch (Exception)
+                    {
+
+                        throw;
                     }
                 }
                 else if (menuSelection == send)
@@ -118,13 +160,9 @@ namespace TenmoClient
                     decimal amount;
 
                     List<API_User> otherUsers = accountService.GetAllUsers();
-                    string id = "ID";
-                    string name = "Name";
-                    string userFrom = "UserFrom";
-                    string userTo = "UserTo";
-                    string sentAmount = "Amount";
+                    
                     Console.WriteLine($"| {id.PadRight(5)} | {name.PadRight(20)}");
-                    Console.WriteLine("----------------------------------------------------");
+                    Console.WriteLine("------------------------------------------------------------");
                     foreach (API_User user in otherUsers)
                     {
                         Console.WriteLine($"| {user.UserId.ToString().PadRight(5)} | {user.Username.ToString().PadRight(20)}");
@@ -147,12 +185,13 @@ namespace TenmoClient
                                 {
                                     validInput = true;
                                 }
-                                else
-                                {
-                                    Console.WriteLine("Please enter a valid User ID and Amount");
-                                }
+                                
                             }
-                            
+                            if (validInput == false)
+                            {
+                                Console.WriteLine("Please enter a valid User ID and Amount");
+                            }
+
                         } while (!validInput);
                         
                     }
@@ -164,7 +203,7 @@ namespace TenmoClient
                     
                  
                     API_Transfer sendTransfer = transferService.SendTEbucks(userID,amount);
-                    Console.WriteLine($"{id.PadRight(5)} | {userFrom.PadRight(20)} | {userTo.PadRight(20)} | {sentAmount.PadRight(6)}");
+                    Console.WriteLine($"| {id.PadRight(5)} | {userFrom.PadRight(20)} | {userTo.PadRight(20)} | {sentAmount.PadRight(6)}");
                     Console.WriteLine("------------------------------------------------------------");
                     Console.WriteLine($"| {sendTransfer.TransferId.ToString().PadRight(5)} | {sendTransfer.UserFrom.ToString().PadRight(20)} | {sendTransfer.UserTo.ToString().PadRight(20)} | {sendTransfer.Amount.ToString().PadRight(6)}");
                 }
