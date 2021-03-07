@@ -76,7 +76,7 @@ namespace TenmoServer.DAO
 
             try
             {
-                //using (TransactionScope transaction = new TransactionScope())
+                using (TransactionScope transaction = new TransactionScope())
                 using (SqlConnection conn = new SqlConnection(connectionString))
                 {
                     conn.Open();
@@ -87,7 +87,17 @@ namespace TenmoServer.DAO
                     cmd.Parameters.AddWithValue("@amount", amount);
                     cmd.Parameters.AddWithValue("@accountId", accountId);
 
-                    successful = true;
+                    int rowsAffected = cmd.ExecuteNonQuery();
+
+                    if (rowsAffected > 0)
+                    {
+                        successful = true;
+                        transaction.Complete();
+                    }
+                    else
+                    {
+                        transaction.Dispose();
+                    }
                 }
             }
             catch (Exception e)
