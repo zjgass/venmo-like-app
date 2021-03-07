@@ -118,7 +118,11 @@ namespace TenmoClient
                     decimal amount;
 
                     List<API_User> otherUsers = accountService.GetAllUsers();
-                    Console.WriteLine("ID       | Name");
+                    string id = "ID";
+                    string userFrom = "UserFrom";
+                    string userTo = "UserTo";
+                    string sentAmount = "Amount";
+                    Console.WriteLine($"{id.PadRight(5)} | {userFrom.PadRight(20)} | {userTo.PadRight(20)} | {sentAmount.PadRight(6)}");
                     Console.WriteLine("----------------------------------------------------");
                     foreach (API_User user in otherUsers)
                     {
@@ -159,6 +163,8 @@ namespace TenmoClient
                     
                  
                     API_Transfer sendTransfer = transferService.SendTEbucks(userID,amount);
+                    Console.WriteLine($"{id.PadRight(5)} | {userFrom.PadRight(20)} | {userTo.PadRight(20)} | {sentAmount.PadRight(6)}");
+                    Console.WriteLine("------------------------------------------------------------");
                     Console.WriteLine($"| {sendTransfer.TransferId.ToString().PadRight(5)} | {sendTransfer.UserFrom.ToString().PadRight(20)} | {sendTransfer.UserTo.ToString().PadRight(20)} | {sendTransfer.Amount.ToString().PadRight(6)}");
                 }
                 else if (menuSelection == request)
