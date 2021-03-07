@@ -150,6 +150,7 @@ namespace TenmoServer.Controllers
                 transfer.TransferType = "Request";
                 transfer.TransferStatus = "Pending";
                 transfer = transferDao.NewTransfer(transfer);
+                transfer = transferDao.GetTransfer(transfer.UserFromId, transfer.TransferId);
 
                 return CreatedAtRoute("GetTransfer", new { id = transfer.TransferId }, transfer);
             }
@@ -174,7 +175,15 @@ namespace TenmoServer.Controllers
             {
                 if (transfer.TransferStatus.ToLower().Trim().Equals("approved"))
                 {
-                    success = ExecuteTransfer(transfer);
+                    try
+                    {
+                        success = ExecuteTransfer(transfer);
+                    }
+                    catch (Exception e)
+                    {
+                        return BadRequest(e.Message);
+                    }
+
                     if (success)
                     {
                         transfer = transferDao.UpdateTransfer(transfer);
@@ -182,7 +191,7 @@ namespace TenmoServer.Controllers
                     }
                     
                 }
-                else if (transfer.TransferStatus.ToLower().Trim().Equals("reject"))
+                else if (transfer.TransferStatus.ToLower().Trim().Equals("rejected"))
                 {
                     success = true;
                     transfer = transferDao.UpdateTransfer(transfer);
