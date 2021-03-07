@@ -159,6 +159,7 @@ namespace TenmoServer.DAO
                     cmd.Parameters.AddWithValue("@amount", transfer.Amount);
 
                     transfer.TransferId = Convert.ToInt32(cmd.ExecuteScalar());
+                    transfer = GetTransfer(transfer.UserFromId, transfer.TransferId);
                 }
             }
             catch (Exception e)
