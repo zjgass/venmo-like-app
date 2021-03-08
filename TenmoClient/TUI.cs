@@ -194,6 +194,7 @@ namespace TenmoClient
                                     else if (option.Trim() == "0")
                                     {
                                         leavePending = true;
+                                        updatedTransfer = null;
                                     }
                                 }
                                 if (!leavePending && updatedTransfer != null)
@@ -203,7 +204,9 @@ namespace TenmoClient
                                     Console.WriteLine($"{id.PadRight(5)} {status.PadRight(10)} {userTo.PadRight(20)} {sentAmount.PadRight(6)}");
                                     Console.WriteLine("------------------------------------------------------------");
                                     Console.WriteLine($"{updatedTransfer.TransferId.ToString().PadRight(5)} {updatedTransfer.TransferStatus.ToString().PadRight(10)} {updatedTransfer.UserTo.ToString().PadRight(20)} {updatedTransfer.Amount.ToString().PadRight(6)}");
+                                    updatedTransfer = null;
                                 }
+                                
 
                             } while (!continueWorking);
                         }
