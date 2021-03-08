@@ -5,11 +5,8 @@ using TenmoClient.Data;
 
 namespace TenmoClient
 {
-    public class AuthService
+    public class AuthService : SuperService
     {
-        private readonly static string API_BASE_URL = "https://localhost:44315/";
-        private readonly IRestClient client = new RestClient();
-
         //login endpoints
         public bool Register(LoginUser registerUser)
         {

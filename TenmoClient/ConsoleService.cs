@@ -4,7 +4,7 @@ using TenmoClient.Data;
 
 namespace TenmoClient
 {
-    public class ConsoleService
+    public class ConsoleService : SuperService
     {
         /// <summary>
         /// Prompts for transfer ID to view, approve, or reject
