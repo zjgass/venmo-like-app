@@ -111,11 +111,11 @@ namespace TenmoClient
                     do
                     {
                         Console.WriteLine();
-                        Console.WriteLine($"| {id.PadRight(5)} | {userFrom.PadRight(20)} | {userTo.PadRight(20)} | {sentAmount.PadRight(6)}");
+                        Console.WriteLine($"{id.PadRight(5)} {userFrom.PadRight(20)} {userTo.PadRight(20)} {sentAmount.PadRight(6)}");
                         Console.WriteLine("------------------------------------------------------------");
                         foreach (API_Transfer transfer in pastTransfers)
                         {
-                            Console.WriteLine($"| {transfer.TransferId.ToString().PadRight(5)} | {transfer.UserFrom.ToString().PadRight(20)} | {transfer.UserTo.ToString().PadRight(20)} | {transfer.Amount.ToString().PadRight(6)}");
+                            Console.WriteLine($"{transfer.TransferId.ToString().PadRight(5)} {transfer.UserFrom.ToString().PadRight(20)} {transfer.UserTo.ToString().PadRight(20)} {transfer.Amount.ToString().PadRight(6)}");
                         }
 
                         Console.WriteLine();
