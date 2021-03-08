@@ -165,18 +165,21 @@ namespace TenmoClient
                                         leavePending = true;
                                     }
                                 }
-                            } 
-                            if (updatedTransfer != null)
-                            {
-                                Console.WriteLine();
-                                Console.WriteLine("Updated Transfer Request:");
-                                Console.WriteLine($"| {id.PadRight(5)} | {status.PadRight(10)} | {userFrom.PadRight(20)} | {userTo.PadRight(20)} | {sentAmount.PadRight(6)}");
-                                Console.WriteLine("------------------------------------------------------------");
-                                Console.WriteLine($"| {updatedTransfer.TransferId.ToString().PadRight(5)} | {updatedTransfer.TransferStatus.ToString().PadRight(10)} | {updatedTransfer.UserFrom.ToString().PadRight(20)} | {updatedTransfer.UserTo.ToString().PadRight(20)} | {updatedTransfer.Amount.ToString().PadRight(6)}");
-                            }
-                            
-                        } while (!continueWorking);
-                        
+                                if (updatedTransfer != null)
+                                {
+                                    Console.WriteLine();
+                                    Console.WriteLine("Updated Transfer Request:");
+                                    Console.WriteLine($"| {id.PadRight(5)} | {status.PadRight(10)} | {userFrom.PadRight(20)} | {userTo.PadRight(20)} | {sentAmount.PadRight(6)}");
+                                    Console.WriteLine("------------------------------------------------------------");
+                                    Console.WriteLine($"| {updatedTransfer.TransferId.ToString().PadRight(5)} | {updatedTransfer.TransferStatus.ToString().PadRight(10)} | {updatedTransfer.UserFrom.ToString().PadRight(20)} | {updatedTransfer.UserTo.ToString().PadRight(20)} | {updatedTransfer.Amount.ToString().PadRight(6)}");
+                                }
+
+                            } while (!continueWorking);
+                        }
+                        catch (Exception)
+                        {
+                            throw;
+                        }
                         
                     }
                     else
