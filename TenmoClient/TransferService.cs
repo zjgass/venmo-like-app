@@ -102,13 +102,13 @@ namespace TenmoClient
         {
             client.Authenticator = new JwtAuthenticator(UserService.GetToken());
 
-            RestRequest request = new RestRequest(API_BASE_URL + $"api/transfer/request/{transfer.TransferId}");
+            RestRequest request = new RestRequest(API_BASE_URL + $"api/transfer/{transfer.TransferId}");
             transfer.TransferStatus = option;
             request.AddJsonBody(transfer);
             IRestResponse<API_Transfer> updateTransfer = client.Put<API_Transfer>(request);
             if (updateTransfer.ResponseStatus != ResponseStatus.Completed)
             {
-                Console.WriteLine("Error occurred - unable to reach server.");
+                Console.WriteLine($"Error occurred - {updateTransfer.ErrorMessage}");
             }
             else if (!updateTransfer.IsSuccessful)
             {
