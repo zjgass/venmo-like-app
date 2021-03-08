@@ -106,13 +106,47 @@ namespace TenmoClient
                 else if (menuSelection == pastTransactions)
                 {
                     List<API_Transfer> pastTransfers = transferService.GetPastTransfers();
-                    Console.WriteLine();
-                    Console.WriteLine($"| {id.PadRight(5)} | {status.PadRight(10)} | {userFrom.PadRight(20)} | {userTo.PadRight(20)} | {sentAmount.PadRight(6)}");
-                    Console.WriteLine("------------------------------------------------------------");
-                    foreach (API_Transfer transfer in pastTransfers)
+                    bool checkingPast = true;
+
+                    do
                     {
-                        Console.WriteLine($"| {transfer.TransferId.ToString().PadRight(5)} | {transfer.TransferStatus.ToString().PadRight(10)} | {transfer.UserFrom.ToString().PadRight(20)} | {transfer.UserTo.ToString().PadRight(20)} | {transfer.Amount.ToString().PadRight(6)}");
-                    }
+                        Console.WriteLine();
+                        Console.WriteLine($"| {id.PadRight(5)} | {userFrom.PadRight(20)} | {userTo.PadRight(20)} | {sentAmount.PadRight(6)}");
+                        Console.WriteLine("------------------------------------------------------------");
+                        foreach (API_Transfer transfer in pastTransfers)
+                        {
+                            Console.WriteLine($"| {transfer.TransferId.ToString().PadRight(5)} | {transfer.UserFrom.ToString().PadRight(20)} | {transfer.UserTo.ToString().PadRight(20)} | {transfer.Amount.ToString().PadRight(6)}");
+                        }
+
+                        Console.WriteLine();
+                        Console.Write("Please enter Transer ID to view details (0 to cancel): ");
+                        string response = Console.ReadLine();
+
+                        if (response.Trim() == "0")
+                        {
+                            checkingPast = false;
+                        }
+                        else
+                        {
+                            foreach(API_Transfer transfer in pastTransfers)
+                            {
+                                if (transfer.TransferId.ToString() == response)
+                                {
+                                    Console.WriteLine($"ID: {transfer.TransferId}\n" +
+                                                      $"From: {transfer.UserFrom}\n" +
+                                                      $"To: {transfer.UserTo}\n" +
+                                                      $"Type: {transfer.TransferType}\n" +
+                                                      $"Status: {transfer.TransferStatus}\n" +
+                                                      $"Amount: {transfer.Amount}");
+                                }
+                                else
+                                {
+                                    Console.WriteLine("Sorry, We could not find that transfer, Please select a valid transfer ID");
+                                }
+                            }
+                        }
+                    } while (checkingPast);
+                    
                 }
                 else if (menuSelection == pendingRequests)
                 {
