@@ -84,5 +84,15 @@ namespace TenmoClient
             IRestResponse<API_Transfer> updateTransfer = client.Put<API_Transfer>(request);
             return updateTransfer.Data;
         }
+
+        public API_Transfer GetTransfer(int transferId)
+        {
+            client.Authenticator = new JwtAuthenticator(UserService.GetToken());
+
+            RestRequest request = new RestRequest(API_BASE_URL + $"api/transfer/{transferId}");
+            IRestResponse<API_Transfer> transfer = client.Get<API_Transfer>(request);
+
+            return transfer.Data;
+        }
     }
 }
