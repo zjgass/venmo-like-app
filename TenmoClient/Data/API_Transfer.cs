@@ -14,5 +14,14 @@ namespace TenmoClient.Data
         public string UserTo { get; set; }
         public int UserToId { get; set; }
         public decimal Amount { get; set; }
+
+        public override string ToString()
+        {
+            string txString = TransferId.ToString().PadRight(12) +
+                (UserFromId == UserService.GetUserId() ?
+                "To: " + UserTo : "From: " + UserFrom).PadRight(22) +
+                Amount.ToString("C2").PadLeft(9);
+            return txString;
+        }
     }
 }
