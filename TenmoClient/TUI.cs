@@ -165,7 +165,7 @@ namespace TenmoClient
                                         leavePending = true;
                                     }
                                 }
-                                if (updatedTransfer != null)
+                                if (!leavePending && updatedTransfer != null)
                                 {
                                     Console.WriteLine();
                                     Console.WriteLine("Updated Transfer Request:");
@@ -176,9 +176,9 @@ namespace TenmoClient
 
                             } while (!continueWorking);
                         }
-                        catch (Exception)
+                        catch (Exception e)
                         {
-                            throw;
+                            Console.WriteLine(e.Message);
                         }
                         
                     }
@@ -213,13 +213,13 @@ namespace TenmoClient
                             string _amount = Console.ReadLine();
                             userID = int.Parse(_userID);
                             amount = decimal.Parse(_amount);
-                            foreach(API_User user in otherUsers)
+                            foreach (API_User user in otherUsers)
                             {
                                 if (user.UserId == userID && amount > 0 && user.UserId != UserService.GetUserId())
                                 {
                                     validInput = true;
                                 }
-                                
+
                             }
                             if (validInput == false)
                             {
@@ -227,25 +227,22 @@ namespace TenmoClient
                             }
 
                         } while (!validInput);
-                        
+
+                        API_Transfer sendTransfer = transferService.SendTEbucks(userID, amount);
+                        if (sendTransfer != null)
+                        {
+                            Console.WriteLine();
+                            Console.WriteLine($"| {id.PadRight(5)} | {userFrom.PadRight(20)} | {userTo.PadRight(20)} | {sentAmount.PadRight(6)}");
+                            Console.WriteLine("------------------------------------------------------------");
+                            Console.WriteLine($"| {sendTransfer.TransferId.ToString().PadRight(5)} | {sendTransfer.UserFrom.ToString().PadRight(20)} | {sendTransfer.UserTo.ToString().PadRight(20)} | {sendTransfer.Amount.ToString().PadRight(6)}");
+                        }
+
                     }
-                    catch (Exception)
+                    catch (Exception e)
                     {
 
-                        throw;
+                        Console.WriteLine(e.Message);
                     }
-                    
-                 
-                    API_Transfer sendTransfer = transferService.SendTEbucks(userID,amount);
-                    if(sendTransfer != null)
-                    {
-                        Console.WriteLine();
-                        Console.WriteLine($"| {id.PadRight(5)} | {userFrom.PadRight(20)} | {userTo.PadRight(20)} | {sentAmount.PadRight(6)}");
-                        Console.WriteLine("------------------------------------------------------------");
-                        Console.WriteLine($"| {sendTransfer.TransferId.ToString().PadRight(5)} | {sendTransfer.UserFrom.ToString().PadRight(20)} | {sendTransfer.UserTo.ToString().PadRight(20)} | {sendTransfer.Amount.ToString().PadRight(6)}");
-                    }
-                    
-                    
                 }
                 else if (menuSelection == request)
                 {
@@ -287,25 +284,21 @@ namespace TenmoClient
                             }
                         } while (!validInput);
 
+                        API_Transfer requestTransfer = transferService.RequestTransfer(userID, amount);
+                        if (requestTransfer != null)
+                        {
+                            Console.WriteLine();
+                            Console.WriteLine("Transfer Request:");
+                            Console.WriteLine($"| {id.PadRight(5)} | {status.PadRight(10)} | {userFrom.PadRight(20)} | {userTo.PadRight(20)} | {sentAmount.PadRight(6)}");
+                            Console.WriteLine("------------------------------------------------------------");
+                            Console.WriteLine($"| {requestTransfer.TransferId.ToString().PadRight(5)} | {requestTransfer.TransferStatus.ToString().PadRight(10)} | {requestTransfer.UserFrom.ToString().PadRight(20)} | {requestTransfer.UserTo.ToString().PadRight(20)} | {requestTransfer.Amount.ToString().PadRight(6)}");
+                        }
                     }
-                    catch (Exception)
+                    catch (Exception e)
                     {
-
-                        throw;
+                        Console.WriteLine(e.Message);
                     }
 
-
-                    API_Transfer requestTransfer = transferService.RequestTransfer(userID, amount);
-                    if (requestTransfer != null)
-                    {
-                        Console.WriteLine();
-                        Console.WriteLine("Transfer Request:");
-                        Console.WriteLine($"| {id.PadRight(5)} | {status.PadRight(10)} | {userFrom.PadRight(20)} | {userTo.PadRight(20)} | {sentAmount.PadRight(6)}");
-                        Console.WriteLine("------------------------------------------------------------");
-                        Console.WriteLine($"| {requestTransfer.TransferId.ToString().PadRight(5)} | {requestTransfer.TransferStatus.ToString().PadRight(10)} | {requestTransfer.UserFrom.ToString().PadRight(20)} | {requestTransfer.UserTo.ToString().PadRight(20)} | {requestTransfer.Amount.ToString().PadRight(6)}");
-                    }
-                    
-                    
                 }
                 else if (menuSelection == logOut)
                 {
