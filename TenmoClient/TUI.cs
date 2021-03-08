@@ -100,7 +100,7 @@ namespace TenmoClient
                 else if (menuSelection == getCurrentBalance)
                 {
                     API_Account currentBalance = accountService.GetAccountBalance();
-                    Console.WriteLine("Balance: " + currentBalance.Balance);
+                    Console.WriteLine("Your current account balance is: " + currentBalance.Balance);
                 }
                 else if (menuSelection == pastTransactions)
                 {
@@ -131,38 +131,38 @@ namespace TenmoClient
                             Console.Write("Would you like to Approve/Reject a request?(0 to go back to the menu): ");
                             string transferString = Console.ReadLine();
                             int transferNum = int.Parse(transferString);
-                            foreach (API_Transfer transfers in pendingTransfers)
+                            if (transferNum == 0)
                             {
-                                if (transfers.TransferId == transferNum)
-                                {
-                                    Console.WriteLine("1: Approve\n"+
-                                                      "2: Reject\n" +
-                                                      "0: Leave as Pending");
-                                    Console.WriteLine("Please select an option: ");
-                                    string option = Console.ReadLine();
-                                    if(option.Trim() == "1")
-                                    {
-                                        option = "approved";
-                                        updatedTransfer = transferService.UpdateTransfer(transfers, option);
-                                    } else if (option.Trim() == "2")
-                                    {
-                                        option = "rejected";
-                                        updatedTransfer = transferService.UpdateTransfer(transfers, option);
-                                    } else if (option.Trim() == "0")
-                                    {
-                                        option = "end";
-                                    }
-                                    
-                                }
-                                else if (transferNum == 0)
-                                {
-                                    continueWorking = false;
-                                }
-                                else
-                                {
-                                    updatedTransfer = null;
-                                }
+                                continueWorking = false;
                             }
+                            else if (transferNum > 0)
+                            {
+                                foreach (API_Transfer transfers in pendingTransfers)
+                                {
+                                    if (transfers.TransferId == transferNum)
+                                    {
+                                        Console.WriteLine("1: Approve\n" +
+                                                          "2: Reject\n" +
+                                                          "0: Leave as Pending");
+                                        Console.WriteLine("Please select an option: ");
+                                        string option = Console.ReadLine();
+                                        if (option.Trim() == "1")
+                                        {
+                                            option = "approved";
+                                            updatedTransfer = transferService.UpdateTransfer(transfers, option);
+                                        }
+                                        else if (option.Trim() == "2")
+                                        {
+                                            option = "rejected";
+                                            updatedTransfer = transferService.UpdateTransfer(transfers, option);
+                                        }
+                                        else if (option.Trim() == "0")
+                                        {
+                                            updatedTransfer = null;
+                                        }
+                                    }
+                                }
+                            } 
                             if (updatedTransfer != null)
                             {
                                 Console.WriteLine("Updated Transfer Request:");
@@ -233,9 +233,17 @@ namespace TenmoClient
                     
                  
                     API_Transfer sendTransfer = transferService.SendTEbucks(userID,amount);
-                    Console.WriteLine($"| {id.PadRight(5)} | {userFrom.PadRight(20)} | {userTo.PadRight(20)} | {sentAmount.PadRight(6)}");
-                    Console.WriteLine("------------------------------------------------------------");
-                    Console.WriteLine($"| {sendTransfer.TransferId.ToString().PadRight(5)} | {sendTransfer.UserFrom.ToString().PadRight(20)} | {sendTransfer.UserTo.ToString().PadRight(20)} | {sendTransfer.Amount.ToString().PadRight(6)}");
+                    if(sendTransfer != null)
+                    {
+                        Console.WriteLine($"| {id.PadRight(5)} | {userFrom.PadRight(20)} | {userTo.PadRight(20)} | {sentAmount.PadRight(6)}");
+                        Console.WriteLine("------------------------------------------------------------");
+                        Console.WriteLine($"| {sendTransfer.TransferId.ToString().PadRight(5)} | {sendTransfer.UserFrom.ToString().PadRight(20)} | {sendTransfer.UserTo.ToString().PadRight(20)} | {sendTransfer.Amount.ToString().PadRight(6)}");
+                    }
+                    else
+                    {
+                        Console.WriteLine("Sorry, We are unable to send your transaction at this time");
+                    }
+                    
                 }
                 else if (menuSelection == request)
                 {
@@ -284,10 +292,18 @@ namespace TenmoClient
 
 
                     API_Transfer requestTransfer = transferService.RequestTransfer(userID, amount);
-                    Console.WriteLine("Transfer Request:");
-                    Console.WriteLine($"| {id.PadRight(5)} | {status.PadRight(10)} | {userFrom.PadRight(20)} | {userTo.PadRight(20)} | {sentAmount.PadRight(6)}");
-                    Console.WriteLine("------------------------------------------------------------");
-                    Console.WriteLine($"| {requestTransfer.TransferId.ToString().PadRight(5)} | {requestTransfer.TransferStatus.ToString().PadRight(10)} | {requestTransfer.UserFrom.ToString().PadRight(20)} | {requestTransfer.UserTo.ToString().PadRight(20)} | {requestTransfer.Amount.ToString().PadRight(6)}");
+                    if (requestTransfer != null)
+                    {
+                        Console.WriteLine("Transfer Request:");
+                        Console.WriteLine($"| {id.PadRight(5)} | {status.PadRight(10)} | {userFrom.PadRight(20)} | {userTo.PadRight(20)} | {sentAmount.PadRight(6)}");
+                        Console.WriteLine("------------------------------------------------------------");
+                        Console.WriteLine($"| {requestTransfer.TransferId.ToString().PadRight(5)} | {requestTransfer.TransferStatus.ToString().PadRight(10)} | {requestTransfer.UserFrom.ToString().PadRight(20)} | {requestTransfer.UserTo.ToString().PadRight(20)} | {requestTransfer.Amount.ToString().PadRight(6)}");
+                    }
+                    else
+                    {
+                        Console.WriteLine("Sorry, We were unable to return a Transfer.");
+                    }
+                    
                 }
                 else if (menuSelection == logOut)
                 {
