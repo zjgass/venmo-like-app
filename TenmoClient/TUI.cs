@@ -139,10 +139,7 @@ namespace TenmoClient
                                                       $"Status: {transfer.TransferStatus}\n" +
                                                       $"Amount: {transfer.Amount}");
                                 }
-                                else
-                                {
-                                    Console.WriteLine("Sorry, We could not find that transfer, Please select a valid transfer ID");
-                                }
+                                
                             }
                         }
                     } while (checkingPast);
