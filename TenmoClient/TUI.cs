@@ -154,11 +154,11 @@ namespace TenmoClient
                     List<int> transferNumbers = new List<int>();
                     if (pendingTransfers != null && pendingTransfers.Count > 0)
                     {
-                        Console.WriteLine($"| {id.PadRight(5)} | {status.PadRight(10)} | {userFrom.PadRight(20)} | {userTo.PadRight(20)} | {sentAmount.PadRight(6)}");
+                        Console.WriteLine($"{id.PadRight(5)} {userTo.PadRight(20)} {sentAmount.PadRight(6)}");
                         Console.WriteLine("------------------------------------------------------------");
                         foreach (API_Transfer transfer in pendingTransfers)
                         {
-                            Console.WriteLine($"| {transfer.TransferId.ToString().PadRight(5)} | {transfer.TransferStatus.ToString().PadRight(10)} | {transfer.UserFrom.ToString().PadRight(20)} | {transfer.UserTo.ToString().PadRight(20)} | {transfer.Amount.ToString().PadRight(6)}");
+                            Console.WriteLine($"{transfer.TransferId.ToString().PadRight(5)} {transfer.UserTo.ToString().PadRight(20)} {transfer.Amount.ToString().PadRight(6)}");
                             transferNumbers.Add(transfer.TransferId);
                         }
 
@@ -203,9 +203,9 @@ namespace TenmoClient
                                 {
                                     Console.WriteLine();
                                     Console.WriteLine("Updated Transfer Request:");
-                                    Console.WriteLine($"| {id.PadRight(5)} | {status.PadRight(10)} | {userFrom.PadRight(20)} | {userTo.PadRight(20)} | {sentAmount.PadRight(6)}");
+                                    Console.WriteLine($"{id.PadRight(5)} {status.PadRight(10)} {userTo.PadRight(20)} {sentAmount.PadRight(6)}");
                                     Console.WriteLine("------------------------------------------------------------");
-                                    Console.WriteLine($"| {updatedTransfer.TransferId.ToString().PadRight(5)} | {updatedTransfer.TransferStatus.ToString().PadRight(10)} | {updatedTransfer.UserFrom.ToString().PadRight(20)} | {updatedTransfer.UserTo.ToString().PadRight(20)} | {updatedTransfer.Amount.ToString().PadRight(6)}");
+                                    Console.WriteLine($"{updatedTransfer.TransferId.ToString().PadRight(5)} {updatedTransfer.TransferStatus.ToString().PadRight(10)} {updatedTransfer.UserTo.ToString().PadRight(20)} {updatedTransfer.Amount.ToString().PadRight(6)}");
                                 }
 
                             } while (!continueWorking);
@@ -228,11 +228,11 @@ namespace TenmoClient
 
                     List<API_User> otherUsers = accountService.GetAllUsers();
                     Console.WriteLine();
-                    Console.WriteLine($"| {id.PadRight(5)} | {name.PadRight(20)}");
+                    Console.WriteLine($"{id.PadRight(5)} {name.PadRight(20)}");
                     Console.WriteLine("------------------------------------------------------------");
                     foreach (API_User user in otherUsers)
                     {
-                        Console.WriteLine($"| {user.UserId.ToString().PadRight(5)} | {user.Username.ToString().PadRight(20)}");
+                        Console.WriteLine($"{user.UserId.ToString().PadRight(5)} {user.Username.ToString().PadRight(20)}");
                     }
 
                     try
@@ -241,35 +241,43 @@ namespace TenmoClient
                         do
                         {
                             Console.WriteLine();
-                            Console.Write("Please enter the Account Number for the Account you wish to send to: ");
+                            Console.Write("Enter ID of user you are sending to (0 to cancel): ");
                             string _userID = Console.ReadLine();
-                            Console.Write("Please Enter the amount you wish to send: ");
+                            Console.Write("Enter amount: ");
                             string _amount = Console.ReadLine();
                             userID = int.Parse(_userID);
                             amount = decimal.Parse(_amount);
-                            foreach (API_User user in otherUsers)
+                            if(userID != 0)
                             {
-                                if (user.UserId == userID && amount > 0 && user.UserId != UserService.GetUserId())
+                                foreach (API_User user in otherUsers)
                                 {
-                                    validInput = true;
-                                }
+                                    if (user.UserId == userID && amount > 0 && user.UserId != UserService.GetUserId())
+                                    {
+                                        API_Transfer sendTransfer = transferService.SendTEbucks(userID, amount);
+                                        if (sendTransfer != null)
+                                        {
+                                            Console.WriteLine();
+                                            Console.WriteLine($"{id.PadRight(5)} {userTo.PadRight(20)} {sentAmount.PadRight(6)}");
+                                            Console.WriteLine("------------------------------------------------------------");
+                                            Console.WriteLine($"{sendTransfer.TransferId.ToString().PadRight(5)} {sendTransfer.UserTo.ToString().PadRight(20)} {sendTransfer.Amount.ToString().PadRight(6)}");
+                                        }
+                                        else
+                                        {
+                                            Console.WriteLine("Please enter a valid User ID and Amount");
+                                        }
+                                    }
 
+                                }
                             }
-                            if (validInput == false)
+                            else if(userID == 0)
                             {
-                                Console.WriteLine("Please enter a valid User ID and Amount");
+                                validInput = true;
                             }
+                            
 
                         } while (!validInput);
 
-                        API_Transfer sendTransfer = transferService.SendTEbucks(userID, amount);
-                        if (sendTransfer != null)
-                        {
-                            Console.WriteLine();
-                            Console.WriteLine($"| {id.PadRight(5)} | {userFrom.PadRight(20)} | {userTo.PadRight(20)} | {sentAmount.PadRight(6)}");
-                            Console.WriteLine("------------------------------------------------------------");
-                            Console.WriteLine($"| {sendTransfer.TransferId.ToString().PadRight(5)} | {sendTransfer.UserFrom.ToString().PadRight(20)} | {sendTransfer.UserTo.ToString().PadRight(20)} | {sendTransfer.Amount.ToString().PadRight(6)}");
-                        }
+                        
 
                     }
                     catch (Exception e)
@@ -283,11 +291,11 @@ namespace TenmoClient
 
                     List<API_User> otherUsers = accountService.GetAllUsers();
                     Console.WriteLine();
-                    Console.WriteLine($"| {id.PadRight(5)} | {name.PadRight(20)}");
+                    Console.WriteLine($"{id.PadRight(5)} {name.PadRight(20)}");
                     Console.WriteLine("------------------------------------------------------------");
                     foreach (API_User user in otherUsers)
                     {
-                        Console.WriteLine($"| {user.UserId.ToString().PadRight(5)} | {user.Username.ToString().PadRight(20)}");
+                        Console.WriteLine($"{user.UserId.ToString().PadRight(5)} {user.Username.ToString().PadRight(20)}");
                     }
 
                     int userID;
@@ -298,35 +306,45 @@ namespace TenmoClient
                         do
                         {
                             Console.WriteLine();
-                            Console.Write("Please enter the Account Number for the Account you wish to Request from: ");
+                            Console.Write("Enter ID of user you are requesting from (0 to cancel): ");
                             string _userID = Console.ReadLine();
-                            Console.Write("Please Enter the amount you wish to Request: ");
+                            Console.Write("Enter amount: ");
                             string _amount = Console.ReadLine();
                             userID = int.Parse(_userID);
                             amount = decimal.Parse(_amount);
-                            foreach (API_User user in otherUsers)
+                            if(userID != 0)
                             {
-                                if (user.UserId == userID && amount > 0 && user.UserId != UserService.GetUserId())
+                                foreach (API_User user in otherUsers)
                                 {
-                                    validInput = true;
-                                }
+                                    if (user.UserId == userID && amount > 0 && user.UserId != UserService.GetUserId())
+                                    {
+                                        API_Transfer requestTransfer = transferService.RequestTransfer(userID, amount);
+                                        if (requestTransfer != null)
+                                        {
+                                            Console.WriteLine();
+                                            Console.WriteLine("Transfer Request:");
+                                            Console.WriteLine($"{id.PadRight(5)} {userTo.PadRight(20)} {sentAmount.PadRight(6)}");
+                                            Console.WriteLine("------------------------------------------------------------");
+                                            Console.WriteLine($"{requestTransfer.TransferId.ToString().PadRight(5)} {requestTransfer.UserTo.ToString().PadRight(20)} {requestTransfer.Amount.ToString().PadRight(6)}");
+                                            validInput = true;
+                                        }
+                                        else
+                                        {
+                                            Console.WriteLine("Please enter a valid User ID and Amount");
+                                        }
+                                    }
+                                    else if(userID == 0)
+                                    {
+                                        validInput = true;
+                                    }
 
-                                if (validInput == false)
-                                {
-                                    Console.WriteLine("Please enter a valid User ID and Amount");
+                                    
                                 }
                             }
+                            
                         } while (!validInput);
 
-                        API_Transfer requestTransfer = transferService.RequestTransfer(userID, amount);
-                        if (requestTransfer != null)
-                        {
-                            Console.WriteLine();
-                            Console.WriteLine("Transfer Request:");
-                            Console.WriteLine($"| {id.PadRight(5)} | {status.PadRight(10)} | {userFrom.PadRight(20)} | {userTo.PadRight(20)} | {sentAmount.PadRight(6)}");
-                            Console.WriteLine("------------------------------------------------------------");
-                            Console.WriteLine($"| {requestTransfer.TransferId.ToString().PadRight(5)} | {requestTransfer.TransferStatus.ToString().PadRight(10)} | {requestTransfer.UserFrom.ToString().PadRight(20)} | {requestTransfer.UserTo.ToString().PadRight(20)} | {requestTransfer.Amount.ToString().PadRight(6)}");
-                        }
+                        
                     }
                     catch (Exception e)
                     {
