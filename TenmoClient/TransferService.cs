@@ -49,7 +49,19 @@ namespace TenmoClient
             RestRequest request = new RestRequest(API_BASE_URL + "api/transfer");
             request.AddJsonBody(newTransfer);
             IRestResponse<API_Transfer> sendTransfer = client.Post<API_Transfer>(request);
-            return sendTransfer.Data;
+            if (sendTransfer.ResponseStatus != ResponseStatus.Completed)
+            {
+                Console.WriteLine("Error occurred - unable to reach server.");
+            }
+            else if (!sendTransfer.IsSuccessful)
+            {
+                Console.WriteLine("Error occurred - received non-success response: " + (int)sendTransfer.StatusCode);
+            }
+            else
+            {
+                return sendTransfer.Data;
+            }
+            return null;
         }
 
         public API_Transfer RequestTransfer(int userID, decimal amount)
@@ -71,7 +83,19 @@ namespace TenmoClient
             RestRequest request = new RestRequest(API_BASE_URL + "api/transfer/request");
             request.AddJsonBody(requestTransfer);
             IRestResponse<API_Transfer> sendTransfer = client.Post<API_Transfer>(request);
-            return sendTransfer.Data;
+            if (sendTransfer.ResponseStatus != ResponseStatus.Completed)
+            {
+                Console.WriteLine("Error occurred - unable to reach server.");
+            }
+            else if (!sendTransfer.IsSuccessful)
+            {
+                Console.WriteLine("Error occurred - received non-success response: " + (int)sendTransfer.StatusCode);
+            }
+            else
+            {
+                return sendTransfer.Data;
+            }
+            return null;
         }
 
         public API_Transfer UpdateTransfer(API_Transfer transfer, string option)
@@ -82,7 +106,19 @@ namespace TenmoClient
             transfer.TransferStatus = option;
             request.AddJsonBody(transfer);
             IRestResponse<API_Transfer> updateTransfer = client.Put<API_Transfer>(request);
-            return updateTransfer.Data;
+            if (updateTransfer.ResponseStatus != ResponseStatus.Completed)
+            {
+                Console.WriteLine("Error occurred - unable to reach server.");
+            }
+            else if (!updateTransfer.IsSuccessful)
+            {
+                Console.WriteLine("Error occurred - received non-success response: " + (int)updateTransfer.StatusCode);
+            }
+            else
+            {
+                return updateTransfer.Data;
+            }
+            return null;
         }
 
         public API_Transfer GetTransfer(int transferId)

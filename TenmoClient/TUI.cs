@@ -100,11 +100,13 @@ namespace TenmoClient
                 else if (menuSelection == getCurrentBalance)
                 {
                     API_Account currentBalance = accountService.GetAccountBalance();
+                    Console.WriteLine();
                     Console.WriteLine("Your current account balance is: " + currentBalance.Balance);
                 }
                 else if (menuSelection == pastTransactions)
                 {
                     List<API_Transfer> pastTransfers = transferService.GetPastTransfers();
+                    Console.WriteLine();
                     Console.WriteLine($"| {id.PadRight(5)} | {status.PadRight(10)} | {userFrom.PadRight(20)} | {userTo.PadRight(20)} | {sentAmount.PadRight(6)}");
                     Console.WriteLine("------------------------------------------------------------");
                     foreach (API_Transfer transfer in pastTransfers)
@@ -163,29 +165,19 @@ namespace TenmoClient
                                         leavePending = true;
                                     }
                                 }
-                                if (!leavePending)
-                                {
-                                    Console.WriteLine("Updated Transfer Request:");
-                                    Console.WriteLine($"| {id.PadRight(5)} | {status.PadRight(10)} | {userFrom.PadRight(20)} | {userTo.PadRight(20)} | {sentAmount.PadRight(6)}");
-                                    Console.WriteLine("------------------------------------------------------------");
-                                    Console.WriteLine($"| {updatedTransfer.TransferId.ToString().PadRight(5)} | {updatedTransfer.TransferStatus.ToString().PadRight(10)} | {updatedTransfer.UserFrom.ToString().PadRight(20)} | {updatedTransfer.UserTo.ToString().PadRight(20)} | {updatedTransfer.Amount.ToString().PadRight(6)}");
-                                }
-                                else if (!leavePending)
-                                {
-                                    Console.WriteLine("Sorry, We couldn't find that account, Please try again");
-                                }
-                                else
-                                {
-                                    Console.WriteLine("Transer left in the pending state.");
-                                }
-                            } while (continueWorking);
-
-                        }
-                        catch (Exception)
-                        {
-
-                            throw;
-                        }
+                            } 
+                            if (updatedTransfer != null)
+                            {
+                                Console.WriteLine();
+                                Console.WriteLine("Updated Transfer Request:");
+                                Console.WriteLine($"| {id.PadRight(5)} | {status.PadRight(10)} | {userFrom.PadRight(20)} | {userTo.PadRight(20)} | {sentAmount.PadRight(6)}");
+                                Console.WriteLine("------------------------------------------------------------");
+                                Console.WriteLine($"| {updatedTransfer.TransferId.ToString().PadRight(5)} | {updatedTransfer.TransferStatus.ToString().PadRight(10)} | {updatedTransfer.UserFrom.ToString().PadRight(20)} | {updatedTransfer.UserTo.ToString().PadRight(20)} | {updatedTransfer.Amount.ToString().PadRight(6)}");
+                            }
+                            
+                        } while (!continueWorking);
+                        
+                        
                     }
                     else
                     {
@@ -198,7 +190,7 @@ namespace TenmoClient
                     decimal amount;
 
                     List<API_User> otherUsers = accountService.GetAllUsers();
-                    
+                    Console.WriteLine();
                     Console.WriteLine($"| {id.PadRight(5)} | {name.PadRight(20)}");
                     Console.WriteLine("------------------------------------------------------------");
                     foreach (API_User user in otherUsers)
@@ -211,6 +203,7 @@ namespace TenmoClient
                         bool validInput = false;
                         do
                         {
+                            Console.WriteLine();
                             Console.Write("Please enter the Account Number for the Account you wish to send to: ");
                             string _userID = Console.ReadLine();
                             Console.Write("Please Enter the amount you wish to send: ");
@@ -243,20 +236,19 @@ namespace TenmoClient
                     API_Transfer sendTransfer = transferService.SendTEbucks(userID,amount);
                     if(sendTransfer != null)
                     {
+                        Console.WriteLine();
                         Console.WriteLine($"| {id.PadRight(5)} | {userFrom.PadRight(20)} | {userTo.PadRight(20)} | {sentAmount.PadRight(6)}");
                         Console.WriteLine("------------------------------------------------------------");
                         Console.WriteLine($"| {sendTransfer.TransferId.ToString().PadRight(5)} | {sendTransfer.UserFrom.ToString().PadRight(20)} | {sendTransfer.UserTo.ToString().PadRight(20)} | {sendTransfer.Amount.ToString().PadRight(6)}");
                     }
-                    else
-                    {
-                        Console.WriteLine("Sorry, We are unable to send your transaction at this time");
-                    }
+                    
                     
                 }
                 else if (menuSelection == request)
                 {
 
                     List<API_User> otherUsers = accountService.GetAllUsers();
+                    Console.WriteLine();
                     Console.WriteLine($"| {id.PadRight(5)} | {name.PadRight(20)}");
                     Console.WriteLine("------------------------------------------------------------");
                     foreach (API_User user in otherUsers)
@@ -271,6 +263,7 @@ namespace TenmoClient
                         bool validInput = false;
                         do
                         {
+                            Console.WriteLine();
                             Console.Write("Please enter the Account Number for the Account you wish to Request from: ");
                             string _userID = Console.ReadLine();
                             Console.Write("Please Enter the amount you wish to Request: ");
@@ -302,15 +295,13 @@ namespace TenmoClient
                     API_Transfer requestTransfer = transferService.RequestTransfer(userID, amount);
                     if (requestTransfer != null)
                     {
+                        Console.WriteLine();
                         Console.WriteLine("Transfer Request:");
                         Console.WriteLine($"| {id.PadRight(5)} | {status.PadRight(10)} | {userFrom.PadRight(20)} | {userTo.PadRight(20)} | {sentAmount.PadRight(6)}");
                         Console.WriteLine("------------------------------------------------------------");
                         Console.WriteLine($"| {requestTransfer.TransferId.ToString().PadRight(5)} | {requestTransfer.TransferStatus.ToString().PadRight(10)} | {requestTransfer.UserFrom.ToString().PadRight(20)} | {requestTransfer.UserTo.ToString().PadRight(20)} | {requestTransfer.Amount.ToString().PadRight(6)}");
                     }
-                    else
-                    {
-                        Console.WriteLine("Sorry, We were unable to return a Transfer.");
-                    }
+                    
                     
                 }
                 else if (menuSelection == logOut)
