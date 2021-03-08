@@ -13,15 +13,15 @@ namespace TenmoClient
 
         protected bool ProcessResponse(IRestResponse response)
         {
-            if ((int)response.StatusCode == 500)
+            if ((int)response.StatusCode >= 500 && (int)response.StatusCode < 600)
             {
                 throw new HttpRequestException($"Error occurred server side.");
             }
-            else if ((int)response.StatusCode == 400)
+            else if ((int)response.StatusCode >= 400 && (int)response.StatusCode < 500)
             {
                 throw new HttpRequestException("Error occurred - received non-success response: " + response.Content);
             }
-            else if ((int)response.StatusCode == 200)
+            else if ((int)response.StatusCode >= 200 && (int)response.StatusCode < 300)
             {
                 return true;
             }
