@@ -194,7 +194,7 @@ namespace TenmoClient
                                     else if (option.Trim() == "0")
                                     {
                                         leavePending = true;
-                                        updatedTransfer = null;
+                                        
                                     }
                                 }
                                 if (!leavePending && updatedTransfer != null)
@@ -208,7 +208,7 @@ namespace TenmoClient
                                 }
                                 
 
-                            } while (!continueWorking);
+                            } while (continueWorking);
                         }
                         catch (Exception e)
                         {
