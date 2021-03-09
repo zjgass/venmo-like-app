@@ -331,24 +331,39 @@ namespace TenmoClient
             {
                 correctResponse = false;
                 Console.Write("Enter amount: ");
-                amount = decimal.Parse(Console.ReadLine().Trim());
-                if (amount >= 0.01M)
+
+                try
                 {
-                    correctResponse = true;
+                    amount = decimal.Parse(Console.ReadLine().Trim());
+
+                    if (amount >= 0.01M)
+                    {
+                        correctResponse = true;
+                    }
+                    else
+                    {
+                        Console.WriteLine("Please eneter an amount greater than or equal to 0.01.");
+                    }
                 }
-                else
+                catch(Exception e)
                 {
-                    Console.WriteLine("Please eneter an amount greater than or equal to 0.01.");
+                    Console.WriteLine("Please enter an amount.");
                 }
             } while (!correctResponse);
 
-            if (sending)
+            try
             {
-                transfer = transferService.SendTEbucks(selectedUser.UserId, amount);
-            }
-            else
+                if (sending)
+                {
+                    transfer = transferService.SendTEbucks(selectedUser.UserId, amount);
+                }
+                else
+                {
+                    transfer = transferService.RequestTransfer(selectedUser.UserId, amount);
+                }
+            } catch(Exception e)
             {
-                transfer = transferService.RequestTransfer(selectedUser.UserId, amount);
+                Console.WriteLine(e.Message);
             }
 
             return transfer;
