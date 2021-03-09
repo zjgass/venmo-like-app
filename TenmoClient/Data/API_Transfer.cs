@@ -14,5 +14,15 @@ namespace TenmoClient.Data
         public string UserTo { get; set; }
         public int UserToId { get; set; }
         public decimal Amount { get; set; }
+
+        public override string ToString()
+        {
+            return $"Id: {TransferId}\n" +
+                $"From: {UserFrom}\n" +
+                $"To: {UserTo}\n" +
+                $"Type: {TransferType}\n" +
+                $"Status: {TransferStatus}\n" +
+                $"Ammount: {Amount}";
+        }
     }
 }
