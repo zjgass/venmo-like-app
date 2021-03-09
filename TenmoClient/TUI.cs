@@ -95,7 +95,7 @@ namespace TenmoClient
                 else if (menuSelection == getCurrentBalance)
                 {
                     API_Account currentBalance = accountService.GetAccountBalance();
-                    Console.Clear();
+                    //Console.Clear();
                     Console.WriteLine();
                     Console.WriteLine("Your current account balance is: " + currentBalance.Balance);
                 }
@@ -112,7 +112,7 @@ namespace TenmoClient
                     try
                     {
                         API_Transfer transfer = SendRequestTransfer(true);
-                        Console.Clear();
+                        //Console.Clear();
                         Console.WriteLine(PrintTransferTitle(true));
                         Console.WriteLine(PrintTransfer(transfer, true));
                     }
@@ -124,7 +124,7 @@ namespace TenmoClient
                     try
                     {
                         API_Transfer transfer = SendRequestTransfer(false);
-                        Console.Clear();
+                        //Console.Clear();
                         Console.WriteLine(PrintTransferTitle(false));
                         Console.WriteLine(PrintTransfer(transfer, false));
                     }
@@ -160,7 +160,7 @@ namespace TenmoClient
                             "\n--------------------------------------------\n" +
                             "Transfer Details\n" +
                             "--------------------------------------------\n";
-                        Console.Clear();
+                        //Console.Clear();
                         Console.WriteLine(title);
                         Console.WriteLine(selectedTransfer.ToString());
                     }
@@ -216,7 +216,7 @@ namespace TenmoClient
                             "\n--------------------------------------------\n" +
                             "Transfer Details\n" +
                             "--------------------------------------------\n";
-                        Console.Clear();
+                        //Console.Clear();
                         Console.WriteLine(title);
                         Console.WriteLine(updatedTransfer.ToString());
                     }
