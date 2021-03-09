@@ -285,7 +285,7 @@ namespace TenmoClient
             string titleString = "\n-------------------------------------------\n";
             titleString += pastTransfer ? "Transfers\n" : "Pending Transfers\n";
             titleString += "ID          ";
-            titleString += pastTransfer ? "From / To             " : "To                    ";
+            titleString += pastTransfer ? "From / To               " : "To                      ";
             titleString += "Amount\n";
             titleString += "-------------------------------------------";
 
