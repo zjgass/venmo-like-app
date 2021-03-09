@@ -90,10 +90,12 @@ namespace TenmoClient
                 if (!int.TryParse(Console.ReadLine(), out menuSelection))
                 {
                     Console.WriteLine("Invalid input. Please enter only a number.");
+                    menuSelection = -1;
                 }
                 else if (menuSelection == getCurrentBalance)
                 {
                     API_Account currentBalance = accountService.GetAccountBalance();
+                    Console.Clear();
                     Console.WriteLine();
                     Console.WriteLine("Your current account balance is: " + currentBalance.Balance);
                 }
@@ -110,6 +112,7 @@ namespace TenmoClient
                     try
                     {
                         API_Transfer transfer = SendRequestTransfer(true);
+                        Console.Clear();
                         Console.WriteLine(PrintTransferTitle(true));
                         Console.WriteLine(PrintTransfer(transfer, true));
                     }
@@ -121,6 +124,7 @@ namespace TenmoClient
                     try
                     {
                         API_Transfer transfer = SendRequestTransfer(false);
+                        Console.Clear();
                         Console.WriteLine(PrintTransferTitle(false));
                         Console.WriteLine(PrintTransfer(transfer, false));
                     }
@@ -156,6 +160,7 @@ namespace TenmoClient
                             "\n--------------------------------------------\n" +
                             "Transfer Details\n" +
                             "--------------------------------------------\n";
+                        Console.Clear();
                         Console.WriteLine(title);
                         Console.WriteLine(selectedTransfer.ToString());
                     }
@@ -207,7 +212,13 @@ namespace TenmoClient
 
                     if (updatedTransfer != null && !leavePending)
                     {
-                        Console.WriteLine(PrintTransfer(updatedTransfer, false));
+                        string title =
+                            "\n--------------------------------------------\n" +
+                            "Transfer Details\n" +
+                            "--------------------------------------------\n";
+                        Console.Clear();
+                        Console.WriteLine(title);
+                        Console.WriteLine(updatedTransfer.ToString());
                     }
                 } while (continueWorking);
             }
