@@ -17,11 +17,12 @@ namespace TenmoClient.Data
 
         public override string ToString()
         {
-            string txString = TransferId.ToString().PadRight(12) +
-                (UserFromId == UserService.GetUserId() ?
-                "To: " + UserTo : "From: " + UserFrom).PadRight(22) +
-                Amount.ToString("C2").PadLeft(9);
-            return txString;
+            return $"Id: {TransferId}\n" +
+                $"From: {UserFrom}\n" +
+                $"To: {UserTo}\n" +
+                $"Type: {TransferType}\n" +
+                $"Status: {TransferStatus}\n" +
+                $"Ammount: {Amount}";
         }
     }
 }

@@ -71,12 +71,6 @@ namespace TenmoClient
             const int send = 4;
             const int request = 5;
             const int logOut = 6;
-            const string id = "ID";
-            const string name = "Name";
-            const string userFrom = "UserFrom";
-            const string userTo = "UserTo";
-            const string sentAmount = "Amount";
-            const string status = "Status";
 
             int menuSelection = -1;
             while (menuSelection != 0)
@@ -105,260 +99,30 @@ namespace TenmoClient
                 }
                 else if (menuSelection == pastTransactions)
                 {
-                    List<API_Transfer> pastTransfers = transferService.GetPastTransfers();
-                    bool checkingPast = true;
-
-                    do
-                    {
-                        //Console.WriteLine();
-                        //Console.WriteLine($"{id.PadRight(5)} {userFrom.PadRight(20)} {userTo.PadRight(20)} {sentAmount.PadRight(6)}");
-                        //Console.WriteLine("------------------------------------------------------------");
-                        Console.WriteLine(
-                            "-------------------------------------------\n" +
-                            "Transfers\n" +
-                            "ID          From/To                 Amount\n" +
-                            "-------------------------------------------\n");
-                        foreach (API_Transfer transfer in pastTransfers)
-                        {
-                            //Console.WriteLine($"{transfer.TransferId.ToString().PadRight(5)} {transfer.UserFrom.ToString().PadRight(20)} {transfer.UserTo.ToString().PadRight(20)} {transfer.Amount.ToString().PadRight(6)}");
-                            Console.WriteLine(transfer.ToString());
-                        }
-                        Console.Write("---------\n" +
-                            "Please enter transfer ID to view details (0 to cancel):");
-
-                        //Console.WriteLine();
-                        //Console.Write("Please enter Transer ID to view details (0 to cancel): ");
-                        string response = Console.ReadLine();
-
-                        if (response.Trim() == "0")
-                        {
-                            checkingPast = false;
-                        }
-                        else
-                        {
-                            foreach(API_Transfer transfer in pastTransfers)
-                            {
-                                if (transfer.TransferId.ToString() == response)
-                                {
-                                    Console.WriteLine($"ID: {transfer.TransferId}\n" +
-                                                      $"From: {transfer.UserFrom}\n" +
-                                                      $"To: {transfer.UserTo}\n" +
-                                                      $"Type: {transfer.TransferType}\n" +
-                                                      $"Status: {transfer.TransferStatus}\n" +
-                                                      $"Amount: {transfer.Amount}");
-                                }
-                                
-                            }
-                        }
-                    } while (checkingPast);
-                    
+                    ViewPastTransfers();                    
                 }
                 else if (menuSelection == pendingRequests)
                 {
-                    List<API_Transfer> pendingTransfers = transferService.GetPendingTransers();
-                    List<int> transferNumbers = new List<int>();
-                    if (pendingTransfers != null && pendingTransfers.Count > 0)
-                    {
-                        Console.WriteLine($"{id.PadRight(5)} {userTo.PadRight(20)} {sentAmount.PadRight(6)}");
-                        Console.WriteLine("------------------------------------------------------------");
-                        foreach (API_Transfer transfer in pendingTransfers)
-                        {
-                            Console.WriteLine($"{transfer.TransferId.ToString().PadRight(5)} {transfer.UserTo.ToString().PadRight(20)} {transfer.Amount.ToString().PadRight(6)}");
-                            transferNumbers.Add(transfer.TransferId);
-                        }
-
-                        bool continueWorking = true;
-                        API_Transfer updatedTransfer = new API_Transfer();
-                        try
-                        {
-                            do
-                            {
-                                bool leavePending = false;
-                                Console.Write("Would you like to Approve/Reject a request?(0 to go back to the menu): ");
-                                string transferString = Console.ReadLine();
-                                int transferNum = int.Parse(transferString);
-                                if (transferNum == 0)
-                                {
-                                    continueWorking = false;
-                                }
-                                else if (transferNum > 0 && transferNumbers.Contains(transferNum))
-                                {
-                                    updatedTransfer = transferService.GetTransfer(transferNum);
-                                    Console.WriteLine("1: Approve\n" +
-                                                      "2: Reject\n" +
-                                                      "0: Leave as Pending");
-                                    Console.WriteLine("Please select an option: ");
-                                    string option = Console.ReadLine();
-                                    if (option.Trim() == "1")
-                                    {
-                                        option = "approved";
-                                        updatedTransfer = transferService.UpdateTransfer(updatedTransfer, option);
-                                    }
-                                    else if (option.Trim() == "2")
-                                    {
-                                        option = "rejected";
-                                        updatedTransfer = transferService.UpdateTransfer(updatedTransfer, option);
-                                    }
-                                    else if (option.Trim() == "0")
-                                    {
-                                        leavePending = true;
-                                        
-                                    }
-                                }
-                                if (!leavePending && updatedTransfer != null)
-                                {
-                                    Console.WriteLine();
-                                    Console.WriteLine("Updated Transfer Request:");
-                                    Console.WriteLine($"{id.PadRight(5)} {status.PadRight(10)} {userTo.PadRight(20)} {sentAmount.PadRight(6)}");
-                                    Console.WriteLine("------------------------------------------------------------");
-                                    Console.WriteLine($"{updatedTransfer.TransferId.ToString().PadRight(5)} {updatedTransfer.TransferStatus.ToString().PadRight(10)} {updatedTransfer.UserTo.ToString().PadRight(20)} {updatedTransfer.Amount.ToString().PadRight(6)}");
-                                    updatedTransfer = null;
-                                }
-                                
-
-                            } while (continueWorking);
-                        }
-                        catch (Exception e)
-                        {
-                            Console.WriteLine(e.Message);
-                        }
-                        
-                    }
-                    else
-                    {
-                        Console.WriteLine("There are no pending transfers at the momenmt.");
-                    }
+                    ViewPendingTransfers();
                 }
                 else if (menuSelection == send)
                 {
-                    int userID;
-                    decimal amount;
-
-                    List<API_User> otherUsers = accountService.GetAllUsers();
-                    Console.WriteLine();
-                    Console.WriteLine($"{id.PadRight(5)} {name.PadRight(20)}");
-                    Console.WriteLine("------------------------------------------------------------");
-                    foreach (API_User user in otherUsers)
-                    {
-                        Console.WriteLine($"{user.UserId.ToString().PadRight(5)} {user.Username.ToString().PadRight(20)}");
-                    }
-
                     try
                     {
-                        bool validInput = false;
-                        do
-                        {
-                            Console.WriteLine();
-                            Console.Write("Enter ID of user you are sending to (0 to cancel): ");
-                            string _userID = Console.ReadLine();
-                            Console.Write("Enter amount: ");
-                            string _amount = Console.ReadLine();
-                            userID = int.Parse(_userID);
-                            amount = decimal.Parse(_amount);
-                            if(userID != 0)
-                            {
-                                foreach (API_User user in otherUsers)
-                                {
-                                    if (user.UserId == userID && amount > 0 && user.UserId != UserService.GetUserId())
-                                    {
-                                        API_Transfer sendTransfer = transferService.SendTEbucks(userID, amount);
-                                        if (sendTransfer != null)
-                                        {
-                                            Console.WriteLine();
-                                            Console.WriteLine($"{id.PadRight(5)} {userTo.PadRight(20)} {sentAmount.PadRight(6)}");
-                                            Console.WriteLine("------------------------------------------------------------");
-                                            Console.WriteLine($"{sendTransfer.TransferId.ToString().PadRight(5)} {sendTransfer.UserTo.ToString().PadRight(20)} {sendTransfer.Amount.ToString().PadRight(6)}");
-                                        }
-                                        else
-                                        {
-                                            Console.WriteLine("Please enter a valid User ID and Amount");
-                                        }
-                                    }
-
-                                }
-                            }
-                            else if(userID == 0)
-                            {
-                                validInput = true;
-                            }
-                            
-
-                        } while (!validInput);
-
-                        
-
+                        API_Transfer transfer = SendRequestTransfer(true);
+                        Console.WriteLine(PrintTransfer(transfer, true));
                     }
-                    catch (Exception e)
-                    {
-
-                        Console.WriteLine(e.Message);
-                    }
+                    catch (Exception e) { };
                 }
                 else if (menuSelection == request)
                 {
 
-                    List<API_User> otherUsers = accountService.GetAllUsers();
-                    Console.WriteLine();
-                    Console.WriteLine($"{id.PadRight(5)} {name.PadRight(20)}");
-                    Console.WriteLine("------------------------------------------------------------");
-                    foreach (API_User user in otherUsers)
-                    {
-                        Console.WriteLine($"{user.UserId.ToString().PadRight(5)} {user.Username.ToString().PadRight(20)}");
-                    }
-
-                    int userID;
-                    decimal amount;
                     try
                     {
-                        bool validInput = false;
-                        do
-                        {
-                            Console.WriteLine();
-                            Console.Write("Enter ID of user you are requesting from (0 to cancel): ");
-                            string _userID = Console.ReadLine();
-                            Console.Write("Enter amount: ");
-                            string _amount = Console.ReadLine();
-                            userID = int.Parse(_userID);
-                            amount = decimal.Parse(_amount);
-                            if(userID != 0)
-                            {
-                                foreach (API_User user in otherUsers)
-                                {
-                                    if (user.UserId == userID && amount > 0 && user.UserId != UserService.GetUserId())
-                                    {
-                                        API_Transfer requestTransfer = transferService.RequestTransfer(userID, amount);
-                                        if (requestTransfer != null)
-                                        {
-                                            Console.WriteLine();
-                                            Console.WriteLine("Transfer Request:");
-                                            Console.WriteLine($"{id.PadRight(5)} {userTo.PadRight(20)} {sentAmount.PadRight(6)}");
-                                            Console.WriteLine("------------------------------------------------------------");
-                                            Console.WriteLine($"{requestTransfer.TransferId.ToString().PadRight(5)} {requestTransfer.UserTo.ToString().PadRight(20)} {requestTransfer.Amount.ToString().PadRight(6)}");
-                                            validInput = true;
-                                        }
-                                        else
-                                        {
-                                            Console.WriteLine("Please enter a valid User ID and Amount");
-                                        }
-                                    }
-                                    else if(userID == 0)
-                                    {
-                                        validInput = true;
-                                    }
-
-                                    
-                                }
-                            }
-                            
-                        } while (!validInput);
-
-                        
+                        API_Transfer transfer = SendRequestTransfer(false);
+                        Console.WriteLine(PrintTransfer(transfer, false));
                     }
-                    catch (Exception e)
-                    {
-                        Console.WriteLine(e.Message);
-                    }
-
+                    catch (Exception e) { };
                 }
                 else if (menuSelection == logOut)
                 {
@@ -374,6 +138,367 @@ namespace TenmoClient
             }
         }
 
+        private void ViewPastTransfers()
+        {
+            bool continueWorking = true;
 
+            try
+            {
+                do
+                {
+                    API_Transfer selectedTransfer = SelectTransfer(true);
+
+                    if (selectedTransfer != null)
+                    {
+                        string title =
+                            "\n--------------------------------------------\n" +
+                            "Transfer Details\n" +
+                            "--------------------------------------------\n";
+                        Console.WriteLine(title);
+                        Console.WriteLine(selectedTransfer.ToString());
+                    }
+                } while (continueWorking);
+            }
+            catch (Exception e) { }
+        }
+
+        private void ViewPendingTransfers2()
+        {
+            List<API_Transfer> transfers = transferService.GetPendingTransers();
+            bool continueWorking = true;
+
+            if (transfers != null && transfers.Count > 0)
+            {
+                try
+                {
+                    do
+                    {
+                        Console.WriteLine();
+                        Console.WriteLine(
+                            "-------------------------------------------\n" +
+                            "Pending Transfers\n" +
+                            "ID          To                     Amount\n" +
+                            "-------------------------------------------");
+                        foreach (API_Transfer transfer in transfers)
+                        {
+                            string txString = transfer.TransferId.ToString().PadRight(12) +
+                                 "To: " + transfer.UserTo.PadRight(22) +
+                                 transfer.Amount.ToString("C2").PadLeft(9);
+                            Console.WriteLine(txString);
+                        }
+                        Console.Write("---------\n" +
+                            "Would you like to Approve/Reject a request?(0 to go back to the menu): ");
+                        string response = Console.ReadLine().Trim();
+
+                        API_Transfer updatedTransfer = new API_Transfer();
+                        bool leavePending = false;
+
+                        if (response == "0")
+                        {
+                            continueWorking = false;
+                        }
+                        else
+                        {
+                            foreach (API_Transfer transfer in transfers)
+                            {
+                                if (transfer.TransferId.ToString() == response)
+                                {
+                                    updatedTransfer = transfer;
+                                }
+                            }
+                        }
+                        
+                        if (updatedTransfer != null)
+                        {
+                            bool correctOption = true;
+
+                            Console.WriteLine("1: Approve\n" +
+                                              "2: Reject\n" +
+                                              "0: Don't approve or reject");
+                            do
+                            {
+                                correctOption = true;
+                                Console.Write("Please choose an option: ");
+                                string option = Console.ReadLine().Trim();
+                                if (option == "1")
+                                {
+                                    option = "approved";
+                                    updatedTransfer = transferService.UpdateTransfer(updatedTransfer, option);
+                                }
+                                else if (option == "2")
+                                {
+                                    option = "rejected";
+                                    updatedTransfer = transferService.UpdateTransfer(updatedTransfer, option);
+                                }
+                                else if (option == "0")
+                                {
+                                    leavePending = true;
+                                }
+                                else
+                                {
+                                    Console.WriteLine("Please select 1, 2, or 0.");
+                                    correctOption = false;
+                                }
+                            } while (!correctOption);
+                        }
+                        else
+                        {
+                            Console.WriteLine("Please select a valid transfer number.");
+                        }
+
+                        if (!leavePending && updatedTransfer != null)
+                        {
+                            Console.WriteLine();
+                            Console.WriteLine(
+                                "-------------------------------------------\n" +
+                                "Pending Transfers\n" +
+                                "ID          To                     Amount\n" +
+                                "-------------------------------------------");
+                            string txString = updatedTransfer.TransferId.ToString().PadRight(12) +
+                                 "To: " + updatedTransfer.UserTo.PadRight(22) +
+                                 updatedTransfer.Amount.ToString("C2").PadLeft(9);
+                            Console.WriteLine(txString);
+                        }
+
+
+                    } while (continueWorking);
+                }
+                catch (Exception e)
+                {
+                    Console.WriteLine(e.Message);
+                }
+            }
+            else
+            {
+                Console.WriteLine("There are no pending transfers at the momenmt.");
+            }
+        }
+
+        private void ViewPendingTransfers()
+        {
+            try
+            {
+                API_Transfer updatedTransfer = SelectTransfer(false);
+
+                bool correctOption = true;
+                bool leavePending = false;
+
+                Console.WriteLine("1: Approve\n" +
+                                  "2: Reject\n" +
+                                  "0: Don't approve or reject");
+                do
+                {
+                    correctOption = true;
+                    Console.Write("Please choose an option: ");
+                    string option = Console.ReadLine().Trim();
+                    if (option == "1")
+                    {
+                        option = "approved";
+                        updatedTransfer = transferService.UpdateTransfer(updatedTransfer, option);
+                    }
+                    else if (option == "2")
+                    {
+                        option = "rejected";
+                        updatedTransfer = transferService.UpdateTransfer(updatedTransfer, option);
+                    }
+                    else if (option == "0")
+                    {
+                        leavePending = true;
+                    }
+                    else
+                    {
+                        Console.WriteLine("Please select 1, 2, or 0.");
+                        correctOption = false;
+                    }
+                } while (!correctOption);
+
+                if (updatedTransfer != null && !leavePending)
+                {
+                    PrintTransfer(updatedTransfer, false);
+                }
+            }
+            catch (Exception e) 
+            {
+                Console.WriteLine(e.Message);
+            }
+        }
+
+        private API_Transfer SelectTransfer(bool pastTransfers)
+        {
+            API_Transfer selectedTransfer = new API_Transfer();
+            List<API_Transfer> transfers = new List<API_Transfer>();
+            if (pastTransfers)
+            {
+                transfers = transferService.GetPastTransfers();
+            }
+            else
+            {
+                transfers = transferService.GetPendingTransers();
+            }
+            
+            if (transfers != null && transfers.Count > 0)
+            {
+                string titleString = "\n-------------------------------------------\n";
+                titleString += pastTransfers ? "Transfers\n" : "Pending Transfers\n";
+                titleString += "ID          ";
+                titleString += pastTransfers ? "From / To             " : "To                    ";
+                titleString += "Amount\n";
+                titleString += "-------------------------------------------";
+                Console.WriteLine(titleString);
+
+                foreach (API_Transfer transfer in transfers)
+                {
+                    string txString = PrintTransfer(transfer, pastTransfers);
+                    Console.WriteLine(txString);
+                }
+                Console.Write("---------\n");
+
+                bool correctResponse = false;
+                do
+                {
+                    correctResponse = false;
+                    string query = "Please enter transfer ID to ";
+                    query += pastTransfers ? "view details(0 to cancel): " : "approve/reject (0 to cancel): ";
+                    Console.Write(query);
+                    string response = Console.ReadLine().Trim();
+
+                    if (response == "0")
+                    {
+                        throw new Exception("Done selecting a transfer.");
+                    }
+                    else
+                    {
+                        foreach (API_Transfer transfer in transfers)
+                        {
+                            if (transfer.TransferId.ToString() == response)
+                            {
+                                selectedTransfer = transfer;
+                                correctResponse = true;
+                            }
+                        }
+                    }
+                } while (!correctResponse);
+            }
+            else
+            {
+                throw new Exception("No past transfers.");
+            }
+
+            return selectedTransfer;
+        }
+
+        private string PrintTransfer(API_Transfer transfer, bool pastTransfer)
+        {
+            string txString = transfer.TransferId.ToString().PadRight(12) +
+                        (pastTransfer ? (transfer.UserFromId == UserService.GetUserId() ?
+                        "To: " + transfer.UserTo : "From: " + transfer.UserFrom)
+                        : transfer.UserTo).PadRight(22) +
+                        transfer.Amount.ToString("C2").PadLeft(9);
+            return txString;
+        }
+
+        private API_Transfer SendRequestTransfer(bool sending)
+        {
+            API_User selectedUser = SelectUser(sending);
+
+            API_Transfer transfer = new API_Transfer();
+
+            if (sending)
+            {
+                transfer.TransferType = "Send";
+                transfer.TransferStatus = "Approved";
+                transfer.UserFromId = UserService.GetUserId();
+                transfer.UserToId = selectedUser.UserId;
+                transfer.UserTo = selectedUser.Username;
+            }
+            else
+            {
+                transfer.TransferType = "Request";
+                transfer.TransferStatus = "Pending";
+                transfer.UserToId = UserService.GetUserId();
+                transfer.UserFromId = selectedUser.UserId;
+                transfer.UserFrom = selectedUser.Username;
+            }
+
+            decimal amount = 0.01M;
+            bool correctResponse = false;
+            do
+            {
+                correctResponse = false;
+                Console.Write("Enter amount: ");
+                amount = decimal.Parse(Console.ReadLine().Trim());
+                if (amount >= 0.01M)
+                {
+                    correctResponse = true;
+                }
+                else
+                {
+                    Console.WriteLine("Please eneter an amount greater than or equal to 0.01.");
+                }
+            } while (!correctResponse);
+
+            if (sending)
+            {
+                transfer = transferService.SendTEbucks(selectedUser.UserId, amount);
+            }
+            else
+            {
+                transfer = transferService.RequestTransfer(selectedUser.UserId, amount);
+            }
+
+            return transfer;
+        }
+
+        private API_User SelectUser(bool sending)
+        {
+            API_User selectedUser = new API_User();
+            List<API_User> otherUsers = accountService.GetAllUsers();
+
+            if (otherUsers != null && otherUsers.Count > 0)
+            {
+                Console.WriteLine();
+                Console.WriteLine(
+                    "-------------------------------------------\n" +
+                    "Users\n" +
+                    "ID          Name\n" +
+                    "-------------------------------------------");
+                foreach (API_User user in otherUsers)
+                {
+                    string userString = user.UserId.ToString().PadRight(12) +
+                        user.Username.ToString();
+                    Console.WriteLine(userString);
+                }
+                Console.Write("---------\n\n");
+
+                bool correctResponse = false;
+                do
+                {
+                    correctResponse = false;
+                    string query = "Enter ID of user you are ";
+                    query += sending ? "sending to " : "requesting from ";
+                    query += "(0 to cancel): ";
+                    Console.Write(query);
+                    string response = Console.ReadLine().Trim();
+
+                    if (response == "0")
+                    {
+                        throw new Exception("Done selecting a user.");
+                    }
+                    else
+                    {
+                        foreach (API_User user in otherUsers)
+                        {
+                            if (user.UserId.ToString() == response)
+                            {
+                                selectedUser = user;
+                                correctResponse = true;
+                            }
+                        }
+                    }
+                } while (!correctResponse);
+            }
+
+            return selectedUser;
+        }
     }
 }
