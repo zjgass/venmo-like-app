@@ -264,10 +264,10 @@ namespace TenmoClient
                                 selectedTransfer = transfer;
                                 correctResponse = true;
                             }
-                            else
-                            {
-                                Console.WriteLine("Please select a valid transfer id.");
-                            }
+                        }
+                        if (!correctResponse)
+                        {
+                            Console.WriteLine("Please select a valid transfer id.");
                         }
                     }
                 } while (!correctResponse);
@@ -398,10 +398,10 @@ namespace TenmoClient
                                 selectedUser = user;
                                 correctResponse = true;
                             }
-                            else
-                            {
-                                Console.WriteLine("Please select a valid user id.");
-                            }
+                        }
+                        if (!correctResponse)
+                        {
+                            Console.WriteLine("Please select a valid user id.");
                         }
                     }
                 } while (!correctResponse);
