@@ -2,6 +2,7 @@
 using Microsoft.AspNetCore.Mvc;
 using System;
 using System.Collections.Generic;
+using System.Data.SqlClient;
 using System.Linq;
 using System.Threading.Tasks;
 using System.Transactions;
@@ -16,26 +17,18 @@ namespace TenmoServer.Controllers
     public class TransferController : ControllerBase
     {
         private readonly ITransferDAO transferDao;
-        private readonly IAccountDAO accountDAO;
+        private readonly IAccountDAO accountDao;
 
         public TransferController(ITransferDAO _transferDao, IAccountDAO _accountDao)
         {
             transferDao = _transferDao;
-            accountDAO = _accountDao;
+            accountDao = _accountDao;
         }
 
         [HttpGet]
         public ActionResult<List<Transfer>> GetAllCompletedTransfers()
         {
-            int userId = 0;
-            try
-            {
-                userId = Int32.Parse(User.FindFirst("sub").Value);
-            }
-            catch (Exception)
-            {
-                return BadRequest("Invalid user id.");
-            }
+            int userId = VerifyUser();
 
             List<Transfer> transfers = transferDao.GetAllTransfers(userId, true);
 
@@ -49,15 +42,7 @@ namespace TenmoServer.Controllers
         [HttpGet("pending")]
         public ActionResult<List<Transfer>> GetAllPendingTransfers()
         {
-            int userId = 0;
-            try
-            {
-                userId = Int32.Parse(User.FindFirst("sub").Value);
-            }
-            catch (Exception)
-            {
-                return BadRequest();
-            }
+            int userId = VerifyUser();
 
             List<Transfer> transfers = transferDao.GetAllTransfers(userId, false);
 
@@ -75,15 +60,7 @@ namespace TenmoServer.Controllers
         [HttpGet("{id}", Name = "GetTransfer")]
         public ActionResult<Transfer> GetTransfer(int id)
         {
-            int userId = 0;
-            try
-            {
-                userId = Int32.Parse(User.FindFirst("sub").Value);
-            }
-            catch (Exception)
-            {
-                return BadRequest();
-            }
+            int userId = VerifyUser();
 
             Transfer transfer = transferDao.GetTransfer(userId, id);
 
@@ -97,34 +74,25 @@ namespace TenmoServer.Controllers
         [HttpPost]
         public ActionResult<Transfer> SendTransfer(Transfer transfer)
         {
-            bool success = false;
-            int userId = 0;
-            try
-            {
-                userId = Int32.Parse(User.FindFirst("sub").Value);
-            }
-            catch (Exception)
-            {
-                return BadRequest();
-            }
+            int userId = VerifyUser();
 
             if (userId == transfer.UserFromId && userId != transfer.UserToId)
             {
-                transfer.TransferType = "Send";
-                transfer.TransferStatus = "Approved";
-
                 try
                 {
-                    success = ExecuteTransfer(transfer);
+                    VerifyFunds(transfer);
+                    transfer.TransferType = "Send";
+                    transfer.TransferStatus = "Approved";
+
+                    transfer = transferDao.NewTransfer(transfer);
+                }
+                catch (SqlException)
+                {
+                    throw;
                 }
                 catch (Exception e)
                 {
                     return BadRequest(e.Message);
-                }
-
-                if (success)
-                {
-                    transfer = CreateTransfer(transfer);
                 }
                 
                 return CreatedAtRoute("GetTransfer", new { id = transfer.TransferId }, transfer);
@@ -135,22 +103,13 @@ namespace TenmoServer.Controllers
         [HttpPost("request")]
         public ActionResult<Transfer> RequestTransfer(Transfer transfer)
         {
-            int userId = 0;
-            try
-            {
-                userId = Int32.Parse(User.FindFirst("sub").Value);
-            }
-            catch (Exception)
-            {
-                return BadRequest();
-            }
+            int userId = VerifyUser();
 
             if (userId == transfer.UserToId)
             {
                 transfer.TransferType = "Request";
                 transfer.TransferStatus = "Pending";
                 transfer = transferDao.NewTransfer(transfer);
-                transfer = transferDao.GetTransfer(transfer.UserFromId, transfer.TransferId);
 
                 return CreatedAtRoute("GetTransfer", new { id = transfer.TransferId }, transfer);
             }
@@ -160,16 +119,7 @@ namespace TenmoServer.Controllers
         [HttpPut("{id}")]
         public ActionResult<Transfer> UpdateTransfer(Transfer transfer)
         {
-            bool success = false;
-            int userId = 0;
-            try
-            {
-                userId = Int32.Parse(User.FindFirst("sub").Value);
-            }
-            catch (Exception)
-            {
-                return BadRequest("Invalid user id.");
-            }
+            int userId = VerifyUser();
 
             if (transfer.TransferStatus.ToLower().Trim() != "pending" && transfer.UserFromId == userId)
             {
@@ -177,31 +127,27 @@ namespace TenmoServer.Controllers
                 {
                     try
                     {
-                        success = ExecuteTransfer(transfer);
+                        VerifyFunds(transfer);
+
+                        transfer = transferDao.UpdateTransfer(transfer);
+                    }
+                    catch (SqlException)
+                    {
+                        throw;
                     }
                     catch (Exception e)
                     {
                         return BadRequest(e.Message);
                     }
 
-                    if (success)
-                    {
-                        transfer = transferDao.UpdateTransfer(transfer);
-                        transfer = transferDao.GetTransfer(transfer.UserFromId, transfer.TransferId);
-                    }
-                    
+                    return CreatedAtRoute("GetTransfer", new { id = transfer.TransferId }, transfer);
                 }
                 else if (transfer.TransferStatus.ToLower().Trim().Equals("rejected"))
                 {
-                    success = true;
                     transfer = transferDao.UpdateTransfer(transfer);
-                    transfer = transferDao.GetTransfer(transfer.UserFromId, transfer.TransferId);
                 }
 
-                if (success)
-                {
-                    return CreatedAtRoute("GetTransfer", new { id = transfer.TransferId }, transfer);
-                }
+                return CreatedAtRoute("GetTransfer", new { id = transfer.TransferId }, transfer);
             }
             else
             {
@@ -211,65 +157,38 @@ namespace TenmoServer.Controllers
             return BadRequest();
         }
 
-        private bool ExecuteTransfer(Transfer transfer)
-        {
-            bool executeSuccessful = false;
-            bool depositSuccess = false;
-            bool withdrawSuccess = false;
-            decimal balance = accountDAO.GetAccount(transfer.UserFromId).Balance;
-
-            if (transfer.Amount > balance)
-            {
-                throw new Exception("Insufficient funds.");
-            }
-
-            try
-            {
-                using (TransactionScope transaction = new TransactionScope())
-                {
-                    // Get the sum of the initial balances to do a check.
-                    decimal initSum = accountDAO.GetAccount(transfer.UserFromId).Balance
-                                    + accountDAO.GetAccount(transfer.UserToId).Balance;
-
-                    // Deposit.
-                    Account toAccount = accountDAO.GetAccount(transfer.UserToId);
-                    depositSuccess = accountDAO.Deposit(toAccount, transfer.Amount);
-
-                    // Withdraw.
-                    Account fromAccount = accountDAO.GetAccount(transfer.UserFromId);
-                    withdrawSuccess = accountDAO.Withdraw(fromAccount, transfer.Amount);
-
-                    // Get the sum of the final balance to do a check.
-                    decimal finalSum = accountDAO.GetAccount(transfer.UserFromId).Balance
-                                     + accountDAO.GetAccount(transfer.UserToId).Balance;
-
-                    // Verify the sum of balances are equal.
-                    if (initSum == finalSum && depositSuccess && withdrawSuccess)
-                    {
-                        transaction.Complete();
-                        executeSuccessful = true;
-                    }
-                    else
-                    {
-                        transaction.Dispose();
-                        throw new Exception("Sorry error, please try again.");
-                    }
-
-                    return executeSuccessful;
-                }
-            }
-            catch (Exception e)
-            {
-                throw;
-            }
-        }
-
         private Transfer CreateTransfer(Transfer transfer)
         {
             transfer = transferDao.NewTransfer(transfer);
             transfer = transferDao.GetTransfer(transfer.UserFromId, transfer.TransferId);
 
             return transfer;
+        }
+        private int VerifyUser()
+        {
+            int userId = 0;
+            try
+            {
+                userId = Int32.Parse(User.FindFirst("sub").Value);
+            }
+            catch (Exception)
+            {
+                throw new Exception("Invalid user id.");
+            }
+
+            return userId;
+        }
+
+        private bool VerifyFunds(Transfer transfer)
+        {
+            decimal balance = accountDao.GetAccount(transfer.UserFromId).Balance;
+
+            if (transfer.Amount > balance)
+            {
+                throw new Exception("Insufficient funds.");
+            }
+
+            return true;
         }
     }
 }
