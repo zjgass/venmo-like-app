@@ -44,8 +44,8 @@ namespace TenmoServerTests.TransferSqlDAOTests
                 TransferId = TestTransfer.TransferId,
                 TransferType = "request",
                 TransferStatus = "approved",
-                UserFromId = TestUser1.UserId,
-                UserToId = TestUser2.UserId,
+                UserFromId = TestTransfer.UserFromId,
+                UserToId = TestTransfer.UserToId,
                 Amount = 1000.00M
             };
 
