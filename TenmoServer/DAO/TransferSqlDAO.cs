@@ -70,7 +70,7 @@ namespace TenmoServer.DAO
                 {
                     conn.Open();
 
-                    SqlCommand cmd = SqlGetTransfer(conn, transfer);
+                    SqlCommand cmd = SqlGetTransfer(conn, userId, transferId);
                     SqlDataReader reader = cmd.ExecuteReader();
 
                     if (reader.HasRows && reader.Read())
@@ -106,7 +106,7 @@ namespace TenmoServer.DAO
                         transfer.TransferId = Convert.ToInt32(cmd.ExecuteScalar());
 
                         // Get all the information to fully fill out a transfer. 
-                        cmd = SqlGetTransfer(conn, transfer);
+                        cmd = SqlGetTransfer(conn, transfer.UserFromId, transfer.TransferId);
                         SqlDataReader reader = cmd.ExecuteReader();
 
                         if (reader.HasRows && reader.Read())
@@ -143,7 +143,7 @@ namespace TenmoServer.DAO
                         int rowsAffected = Convert.ToInt32(cmd.ExecuteNonQuery());
 
                         // Get all the information to fully fill out a transfer. 
-                        cmd = SqlGetTransfer(conn, transfer);
+                        cmd = SqlGetTransfer(conn, transfer.UserFromId, transfer.TransferId);
                         SqlDataReader reader = cmd.ExecuteReader();
 
                         if (reader.HasRows && reader.Read())
@@ -206,16 +206,20 @@ namespace TenmoServer.DAO
                         }
 
                         transaction.Complete();
+
+                        // Get all the information to return
+                        cmd = SqlGetTransfer(conn, transfer.UserFromId, transfer.TransferId);
+                        SqlDataReader reader = cmd.ExecuteReader();
+
+                        if (reader.HasRows && reader.Read())
+                        {
+                            transfer = ConvertReaderToTransfer(reader);
+                        }
                     }
-
-                    // Get all the information to return
-                    cmd = SqlGetTransfer(conn, transfer);
-                    SqlDataReader reader = cmd.ExecuteReader();
-
-                    if (reader.HasRows && reader.Read())
+                    else
                     {
-                        transfer = ConvertReaderToTransfer(reader);
-
+                        transaction.Dispose();
+                        throw new Exception("Transfer was not complete.");
                     }
                 }
             }
@@ -245,7 +249,7 @@ namespace TenmoServer.DAO
             return transfer;
         }
 
-        private SqlCommand SqlGetTransfer(SqlConnection conn, Transfer transfer)
+        private SqlCommand SqlGetTransfer(SqlConnection conn, int userId, int transferId)
         {
             string sqlText = ("select transfer_id, type.transfer_type_desc, status.transfer_status_desc, " +
                         "userfrom.username as userfrom, userfrom.user_id as userfromid, " +
@@ -257,12 +261,12 @@ namespace TenmoServer.DAO
                         "join accounts as accto on transfers.account_to = accto.account_id " +
                         "join users as userfrom on accfrom.user_id = userfrom.user_id " +
                         "join users as userto on accto.user_id = userto.user_id " +
-                        "where (userfrom.user_id = @userFromId " +
-                        "or userto.user_id = @userFromId) " +
+                        "where (userfrom.user_id = @userId " +
+                        "or userto.user_id = @userId) " +
                         "and transfer_id = @transferId;");
             SqlCommand cmd = new SqlCommand(sqlText, conn);
-            cmd.Parameters.AddWithValue("@userFromId", transfer.UserFromId);
-            cmd.Parameters.AddWithValue("@transferId", transfer.TransferId);
+            cmd.Parameters.AddWithValue("@userId", userId);
+            cmd.Parameters.AddWithValue("@transferId", transferId);
 
             return cmd;
         }

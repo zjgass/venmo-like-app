@@ -115,7 +115,7 @@ namespace TenmoServerTests.TransferSqlDAOTests
         }
 
         [TestMethod]
-        [ExpectedException(typeof(SqlException))]
+        [ExpectedException(typeof(Exception))]
         public void BadUserTransfer()
         {
             // Arrange
