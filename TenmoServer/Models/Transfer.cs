@@ -24,5 +24,23 @@ namespace TenmoServer.Models
         [Required(ErrorMessage = "Must include an amount to transfer.")]
         [Range(0.01, double.MaxValue)]
         public decimal Amount { get; set; }
+
+        public override bool Equals(object obj)
+        {
+            if ((obj == null) || !this.GetType().Equals(obj.GetType()))
+            {
+                return false;
+            }
+            else
+            {
+                Transfer t = (Transfer)obj;
+                return (TransferId == t.TransferId)
+                    && (TransferType.ToLower().Trim().Equals(t.TransferType.ToLower().Trim()))
+                    && (TransferStatus.ToLower().Trim().Equals(t.TransferStatus.ToLower().Trim()))
+                    && (UserFromId == t.UserFromId)
+                    && (UserToId == t.UserToId)
+                    && (Amount == t.Amount);
+            }
+        }
     }
 }
